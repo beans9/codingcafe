@@ -5,10 +5,7 @@ const BASE_URL = 'http://localhost:8080'
 let cafes = {
   baseUrl: `${BASE_URL}/cafe`,
   select: function () {
-    return axios.get(cafes.baseUrl).then(
-      (res) => res.data,
-      (err) => err
-    )
+    return axios.get(cafes.baseUrl).then((res) => res.data)
   },
   get: function (id) {
     return axios.get(cafes.baseUrl + '/' + id).then((res) => res.data)

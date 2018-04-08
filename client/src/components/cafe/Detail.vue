@@ -25,15 +25,27 @@ export default {
       }
     }
   },
-  created: function () {
-    this.init()
+  beforeRouteEnter (to, from, next) {
+    console.log('detail router before')
+    cafes.get(to.params.id).then((res) => {
+      next(vm => {
+        vm.cafe = res
+      })
+    }).catch((e) => {
+      next(false)
+    })
   },
+  watch: {
+    '$route': function (from, to) {
+      this.init()
+    }
+  },
+  created: function () {},
   methods: {
     init: function () {
       cafes.get(this.id).then((res) => {
         this.cafe = res
-      }, (err) => {
-        alert('no data')
+      }).catch((e) => {
         this.$router.push('/')
       })
     },
@@ -44,11 +56,6 @@ export default {
       cafes.del(this.id).then(() => {
         this.$router.push('/')
       })
-    }
-  },
-  watch: {
-    '$route': function(from, to) {
-      this.init()
     }
   }
 }
