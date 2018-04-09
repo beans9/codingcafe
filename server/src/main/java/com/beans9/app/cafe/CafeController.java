@@ -1,5 +1,7 @@
 package com.beans9.app.cafe;
 
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +19,8 @@ public class CafeController {
 	CafeRepo cafeRepo;
 	
 	@GetMapping
-	public Iterable<Cafe> select() {
+	public Iterable<Cafe> select(Principal user) {
+		System.out.println(user.getName());
 		return cafeRepo.findAll();
 	}
 	

@@ -5,6 +5,9 @@ import CafeWrite from '@/components/cafe/Write'
 import CafeUpdate from '@/components/cafe/Update'
 import CafeDetail from '@/components/cafe/Detail'
 
+import UserSignUp from '@/components/user/SignUp'
+import UserSignIn from '@/components/user/SignIn'
+
 Vue.use(Router)
 
 export default new Router({
@@ -14,6 +17,7 @@ export default new Router({
       name: 'Home',
       component: Home
     },
+    // cafes
     {
       path: '/cafe',
       name: 'Cafe',
@@ -35,6 +39,18 @@ export default new Router({
       name: 'CafeDetail',
       component: CafeDetail,
       props: true
+    },
+    // users
+    {
+      path: '/user/signup',
+      name: 'UserSignUp',
+      component: UserSignUp
+    },
+    {
+      path: '/user/signin',
+      name: 'UserSignIn',
+      component: UserSignIn
     }
+
   ]
 })

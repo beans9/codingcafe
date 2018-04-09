@@ -35,9 +35,7 @@ export default {
     }).catch((e) => { next(false) })
   },
   watch: {
-    '$route': function (from, to) {
-      this.init()
-    }
+    '$route': function (from, to) { this.init() }
   },
   created: function () {},
   methods: {
