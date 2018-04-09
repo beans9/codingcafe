@@ -3,7 +3,9 @@
     {{title}}
     <p>ID: {{id}}</p>
     <p>카페명: <input type="text" v-model="cafe.name"/></p>
+    <P>설명: <textarea v-model="cafe.memo"></textarea></P>
     <input type="button" @click="proc()" value="저장"/>
+    <input type="button" @click="back()" value="뒤로"/>
   </div>
 </template>
 
@@ -17,7 +19,8 @@ export default {
       title: '수정',
       cafe: {
         id: null,
-        name: ''
+        name: '',
+        memo: ''
       },
       list: []
     }
@@ -35,6 +38,9 @@ export default {
       cafes.patch(this.cafe).then((res) => {
         this.$router.replace('/cafe/' + res.id)
       })
+    },
+    back: function () {
+      this.$router.go(-1)
     }
   }
 }

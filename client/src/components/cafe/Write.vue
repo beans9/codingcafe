@@ -2,6 +2,7 @@
   <div class="hello">
     {{title}}
     <p>카페명: <input type="text" v-model="cafe.name"/></p>
+    <P>설명: <textarea v-model="cafe.memo"></textarea></P>
     <input type="button" @click="proc()" value="저장"/>
   </div>
 </template>
@@ -14,9 +15,9 @@ export default {
     return {
       title: '입력',
       cafe: {
-        name: ''
-      },
-      list: []
+        name: '',
+        memo: ''
+      }
     }
   },
   created: function () {},

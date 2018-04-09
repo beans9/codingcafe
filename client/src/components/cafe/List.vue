@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <ul>
+    <ul class="cafe-list">
       <li v-for="item in list" v-bind:key="item.id" @click="detail(item)">{{item.name}}</li>
     </ul>
     <p v-if="loading">
@@ -40,5 +40,20 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+}
+
+.cafe-list li{
+  list-style: none;
+  display:inline-block;
+  width:10em;
+  height:10em;
+  line-height:10em;
+  vertical-align: top;
+  border:1px solid black;
+  cursor:pointer;
+}
+
+.cafe-list li+li {
+  margin-left:10px;
 }
 </style>

@@ -35,6 +35,7 @@ public class CafeController {
 	public Cafe patch(@PathVariable long id, @RequestBody Cafe cafe) {
 		Cafe db = get(id);
 		db.setName(cafe.getName());
+		db.setMemo(cafe.getMemo());
 		return cafeRepo.save(db);
 	}
 	

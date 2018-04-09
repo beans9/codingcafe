@@ -5,7 +5,10 @@
       ID: {{id}}
     </p>
     <p>
-      NAME : {{cafe.name}}
+      이름 : {{cafe.name}}
+    </p>
+    <p>
+      설명 : {{cafe.memo}}
     </p>
     <input type="button" @click="patch()" value="수정"/>
     <input type="button" @click="del()" value="삭제"/>
@@ -21,7 +24,8 @@ export default {
   data () {
     return {
       cafe: {
-        name: ''
+        name: '',
+        memo: ''
       }
     }
   },
