@@ -30,14 +30,9 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    console.log('detail router before')
     cafes.get(to.params.id).then((res) => {
-      next(vm => {
-        vm.cafe = res
-      })
-    }).catch((e) => {
-      next(false)
-    })
+      next(vm => { vm.cafe = res })
+    }).catch((e) => { next(false) })
   },
   watch: {
     '$route': function (from, to) {

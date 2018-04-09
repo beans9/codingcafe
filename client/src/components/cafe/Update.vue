@@ -25,13 +25,21 @@ export default {
       list: []
     }
   },
-  created: function () {
-    this.get()
+  beforeRouteEnter (to, from, next) {
+    cafes.get(to.params.id).then((res) => {
+      next(vm => { vm.cafe = res })
+    }).catch((e) => { next(false) })
   },
+  watch: {
+    '$route': function (from, to) { this.get() }
+  },
+  created: function () {},
   methods: {
     get: function () {
       cafes.get(this.id).then((res) => {
         this.cafe = res
+      }).catch((e) => {
+        this.$router.push('/')
       })
     },
     proc: function () {
