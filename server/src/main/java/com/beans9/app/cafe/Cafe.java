@@ -15,4 +15,6 @@ public class Cafe {
 	private long id;	
 	private String name;
 	private String memo;
+	
+	private long userId;
 }

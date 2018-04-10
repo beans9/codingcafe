@@ -3,6 +3,7 @@ package com.beans9.app.cafe;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.beans9.app.user.LoginUserDetails;
+
 @RequestMapping("/cafe")
 @RestController
 public class CafeController {
@@ -19,8 +22,12 @@ public class CafeController {
 	CafeRepo cafeRepo;
 	
 	@GetMapping
-	public Iterable<Cafe> select(Principal user) {
+	public Iterable<Cafe> select(@AuthenticationPrincipal LoginUserDetails userDetails, Principal user) {
 		System.out.println(user.getName());
+		System.out.println(userDetails);
+		if(userDetails !=null) {
+			System.out.println(userDetails.getId());
+		}
 		return cafeRepo.findAll();
 	}
 	
@@ -30,7 +37,8 @@ public class CafeController {
 	}
 	
 	@PostMapping
-	public Cafe post(@RequestBody Cafe cafe) {
+	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @RequestBody Cafe cafe, Principal user) {
+		System.out.println(user);
 		return cafeRepo.save(cafe);
 	}
 	

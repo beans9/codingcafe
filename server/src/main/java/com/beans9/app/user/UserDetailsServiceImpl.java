@@ -1,10 +1,6 @@
 package com.beans9.app.user;
 
-import static java.util.Collections.emptyList;
-
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,7 +19,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (appUser == null) {
 			throw new UsernameNotFoundException(username);
 		}
-		
-		return new User(appUser.getUsername(), appUser.getPassword(), emptyList());
+		return new LoginUserDetails(appUser);
 	}
 }

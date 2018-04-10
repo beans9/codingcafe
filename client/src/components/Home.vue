@@ -2,6 +2,7 @@
   <div class="hello">
     <div class="menu">
       <router-link to="/cafe/write">입력</router-link>
+      <router-link to="/user/signin">로그인</router-link>
       <router-link to="/user/signup">회원가입</router-link>
     </div>
     <CafeList></CafeList>
