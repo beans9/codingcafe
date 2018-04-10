@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
@@ -41,11 +42,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	private UsernamePasswordAuthenticationToken getAuthentication (HttpServletRequest req) {
 		String token = req.getHeader(HEADER_STRING);
 		if (token != null) {
-			String user = Jwts.parser()
+			Claims data = Jwts.parser()
 					.setSigningKey(SECRET.getBytes())
 					.parseClaimsJws(token.replaceAll(TOKEN_PREFIX, ""))
-					.getBody()
-					.getSubject();
+					.getBody();
+			String user = data.getSubject();
+			String id = data.getIssuer();
 			
 			if (user != null) {
 				return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());

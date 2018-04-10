@@ -15,6 +15,7 @@ import io.jsonwebtoken.SignatureAlgorithm
 public class SecurityUtil {
 	public String getToken(String username) {
 		String token = Jwts.builder().setSubject(username)
+				.setIssuer("1")
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
 				.compact();
