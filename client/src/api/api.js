@@ -47,7 +47,7 @@ let users = {
 function authProc (user) {
   localStorage.accessToken = user.token
   localStorage.userName = user.username
-  axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`
+  axios.defaults.headers.common['Authorization'] = `${user.token}`
 }
 
 export {cafes, users}

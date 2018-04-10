@@ -22,11 +22,11 @@ public class CafeController {
 	CafeRepo cafeRepo;
 	
 	@GetMapping
-	public Iterable<Cafe> select(@AuthenticationPrincipal LoginUserDetails userDetails, Principal user) {
-		System.out.println(user.getName());
-		System.out.println(userDetails);
+	public Iterable<Cafe> select(@AuthenticationPrincipal LoginUserDetails userDetails) {
+		// System.out.println(userDetails.getUsername());
+		// System.out.println(userDetails.getId());
 		if(userDetails !=null) {
-			System.out.println(userDetails.getId());
+			// System.out.println(userDetails.getId());
 		}
 		return cafeRepo.findAll();
 	}

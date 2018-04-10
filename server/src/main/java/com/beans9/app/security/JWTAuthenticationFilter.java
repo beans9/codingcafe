@@ -6,25 +6,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.beans9.app.user.AppUser;
+import com.beans9.app.user.LoginUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	
 	private AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private SecurityUtil securityUtil;
 	
 	public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
@@ -42,8 +41,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	}
 	
 	@Override
-	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
-		String token = securityUtil.getToken(((User) auth.getPrincipal()).getUsername());
+	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
+		LoginUserDetails loginUser = (LoginUserDetails) auth.getPrincipal();
+		String token = SecurityUtil.getToken(loginUser.getUsername(), loginUser.getId());
 		res.addHeader(HEADER_STRING, token);
+		ServletOutputStream resOut = res.getOutputStream();
+		String result = "{\"token\":\"" + token +  "\",\"username\":\"" + loginUser.getUsername() + "\"}"; 
+		resOut.print(result);
+		resOut.close();
 	}
 }

@@ -28,7 +28,7 @@ public class AppUserController {
 	public AppUser signUp(@RequestBody AppUser appUser) {
 		appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
 		appUserRepo.save(appUser);
-		appUser.setToken(securityUtil.getToken(appUser.getUsername()));
+		appUser.setToken(securityUtil.getToken(appUser.getUsername(), appUser.getId()));
 		return appUser;
 	}
 }

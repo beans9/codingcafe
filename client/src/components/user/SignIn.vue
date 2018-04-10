@@ -4,7 +4,11 @@
 
     <p>아이디: <input type="text" v-model="user.username"/></p>
     <P>비밀번호: <input type="password" v-model="user.password" /></P>
+
+    <p v-if="loginErrorFlag">아이디와 비밀번호를 확인하십시오</p>
+    {{loginErrorFlag}}
     <input type="button" @click="proc()" value="로그인"/>
+
   </div>
 </template>
 
@@ -17,14 +21,18 @@ export default {
       user: {
         username: '',
         password: ''
-      }
+      },
+      loginErrorFlag: false
     }
   },
   created: function () {},
   methods: {
     proc: function () {
       users.signIn(this.user).then((res) => {
-        console.log(res)
+        this.loginErrorFlag = false
+        this.$router.push('/')
+      }).catch((e) => {
+        this.loginErrorFlag = true
       })
     }
   }

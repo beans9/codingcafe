@@ -3,6 +3,7 @@ package com.beans9.app.security;
 import static com.beans9.app.security.SecurityConstants.HEADER_STRING;
 import static com.beans9.app.security.SecurityConstants.SECRET;
 import static com.beans9.app.security.SecurityConstants.TOKEN_PREFIX;
+import static com.beans9.app.security.SecurityConstants.USER_ID;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import com.beans9.app.user.LoginUserDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -46,11 +49,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 					.setSigningKey(SECRET.getBytes())
 					.parseClaimsJws(token.replaceAll(TOKEN_PREFIX, ""))
 					.getBody();
-			String user = data.getSubject();
-			String id = data.getIssuer();
 			
+			String user = data.getSubject();
+			
+			long id = Long.parseLong(data.get(USER_ID).toString());
+			
+			LoginUserDetails loginUser = new LoginUserDetails(user, id); 
 			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+				return new UsernamePasswordAuthenticationToken(loginUser, null, new ArrayList<>());
 			}
 		}
 		return null;

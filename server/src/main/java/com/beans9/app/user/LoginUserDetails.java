@@ -25,4 +25,13 @@ public class LoginUserDetails extends User{
 		);
 		id = user.getId();
 	}
+	
+	public LoginUserDetails(String username, long userId) {
+		super(
+			username, 
+			"", 
+			emptyList()
+		);
+		id = userId;
+	}
 }
