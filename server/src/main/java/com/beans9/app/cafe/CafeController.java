@@ -1,9 +1,8 @@
 package com.beans9.app.cafe;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,7 +17,7 @@ import com.beans9.app.user.AppUserRepo;
 import com.beans9.app.user.LoginUserDetails;
 
 @RequestMapping("/cafe")
-@RestController
+@RestController					  
 public class CafeController {
 	@Autowired
 	CafeRepo cafeRepo;
