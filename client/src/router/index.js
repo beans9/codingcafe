@@ -7,6 +7,7 @@ import CafeDetail from '@/components/cafe/Detail'
 
 import UserSignUp from '@/components/user/SignUp'
 import UserSignIn from '@/components/user/SignIn'
+import UserInfo from '@/components/user/Info'
 
 Vue.use(Router)
 
@@ -50,6 +51,11 @@ export default new Router({
       path: '/user/signin',
       name: 'UserSignIn',
       component: UserSignIn
+    },
+    {
+      path: '/user/info',
+      name: 'UserInfo',
+      component: UserInfo
     }
 
   ]

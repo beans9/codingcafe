@@ -2,12 +2,11 @@
   <div class="hello">
     <p v-if="loginFlag">{{username}}님 안녕하세요.</p>
     <div class="menu">
-      <router-link to="/cafe/write">입력</router-link>
+      <router-link to="/cafe/write" v-if="loginFlag">입력</router-link>
       <router-link to="/user/signin" v-if="!loginFlag">로그인</router-link>
       <router-link to="/user/signup" v-if="!loginFlag">회원가입</router-link>
       <router-link to="/user/info" v-if="loginFlag">회원정보</router-link>
       <a href="#" @click="logout()" v-if="loginFlag">로그아웃</a>
-
     </div>
     <CafeList></CafeList>
   </div>

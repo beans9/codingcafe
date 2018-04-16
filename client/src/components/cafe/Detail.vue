@@ -2,16 +2,20 @@
   <div class="hello">
     상세화면
     <p>
-      ID: {{id}}
+      게시물ID: {{id}}
     </p>
+    <p>
+      작성자: {{cafe.appUser.username}}
+    </p>
+
     <p>
       이름 : {{cafe.name}}
     </p>
     <p>
       설명 : {{cafe.memo}}
     </p>
-    <input type="button" @click="patch()" value="수정"/>
-    <input type="button" @click="del()" value="삭제"/>
+    <input type="button" @click="patch()" v-if="isModified" value="수정"/>
+    <input type="button" @click="del()" v-if="isModified" value="삭제"/>
     <router-link to="/">리스트</router-link>
   </div>
 </template>
@@ -25,13 +29,24 @@ export default {
     return {
       cafe: {
         name: '',
-        memo: ''
-      }
+        memo: '',
+        appUser: {
+          username: ''
+        }
+      },
+      isModified: false
     }
   },
   beforeRouteEnter (to, from, next) {
     cafes.get(to.params.id).then((res) => {
-      next(vm => { vm.cafe = res })
+      next(vm => {
+        vm.cafe = res
+        let {userId} = localStorage
+        // console.log(res.appUser.id, res.appUser.id === userId)
+        if (userId === res.appUser.id.toString()) {
+          vm.isModified = true
+        }
+      })
     }).catch((e) => { next(false) })
   },
   watch: {

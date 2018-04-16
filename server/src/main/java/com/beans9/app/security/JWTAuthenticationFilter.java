@@ -4,14 +4,13 @@ import static com.beans9.app.security.SecurityConstants.HEADER_STRING;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +19,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.beans9.app.user.AppUser;
 import com.beans9.app.user.LoginUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+
+import net.minidev.json.JSONObject;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	
@@ -46,8 +48,16 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		String token = SecurityUtil.getToken(loginUser.getUsername(), loginUser.getId());
 		res.addHeader(HEADER_STRING, token);
 		ServletOutputStream resOut = res.getOutputStream();
-		String result = "{\"token\":\"" + token +  "\",\"username\":\"" + loginUser.getUsername() + "\"}"; 
-		resOut.print(result);
+		
+		HashMap<String,Object> userInfo = new HashMap<String,Object>();
+		userInfo.put("token", token);
+		userInfo.put("username", loginUser.getUsername());
+		userInfo.put("id", loginUser.getId());
+		
+		Gson gson = new Gson(); 
+		String json = gson.toJson(userInfo);
+		
+		resOut.print(json);
 		resOut.close();
 	}
 }

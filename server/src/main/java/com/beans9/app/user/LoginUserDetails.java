@@ -4,16 +4,14 @@ import static java.util.Collections.emptyList;
 import org.springframework.security.core.userdetails.User;
 
 import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class LoginUserDetails extends User{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
-	@Getter
 	private long id;
-	
+	    
 	public LoginUserDetails(AppUser user)
 	{
 		super
@@ -23,7 +21,7 @@ public class LoginUserDetails extends User{
 			emptyList()
 			
 		);
-		id = user.getId();
+		this.id = user.getId();
 	}
 	
 	public LoginUserDetails(String username, long userId) {
@@ -32,6 +30,6 @@ public class LoginUserDetails extends User{
 			"", 
 			emptyList()
 		);
-		id = userId;
+		this.id = userId;
 	}
 }

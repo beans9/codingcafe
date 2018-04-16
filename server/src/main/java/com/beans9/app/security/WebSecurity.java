@@ -27,6 +27,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeRequests()
 			// 읽기는 허용
+			.antMatchers("/h2console/**").permitAll()
 			.antMatchers("/login").permitAll()
 			.antMatchers(HttpMethod.GET, "/cafe/**").permitAll()
 			.antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
@@ -35,6 +36,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter{
 			.addFilter(new JWTAuthenticationFilter(authenticationManager()))
 			.addFilter(new JWTAuthorizationFilter(authenticationManager()))
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		http.headers().frameOptions().disable();
 	}
 	
 	@Override

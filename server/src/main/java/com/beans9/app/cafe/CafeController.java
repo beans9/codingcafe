@@ -1,6 +1,6 @@
 package com.beans9.app.cafe;
 
-import java.security.Principal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.beans9.app.user.AppUser;
+import com.beans9.app.user.AppUserRepo;
 import com.beans9.app.user.LoginUserDetails;
 
 @RequestMapping("/cafe")
@@ -21,13 +23,11 @@ public class CafeController {
 	@Autowired
 	CafeRepo cafeRepo;
 	
+	@Autowired
+	AppUserRepo appUserRepo;
+	
 	@GetMapping
-	public Iterable<Cafe> select(@AuthenticationPrincipal LoginUserDetails userDetails) {
-		// System.out.println(userDetails.getUsername());
-		// System.out.println(userDetails.getId());
-		if(userDetails !=null) {
-			// System.out.println(userDetails.getId());
-		}
+	public Iterable<Cafe> select() {
 		return cafeRepo.findAll();
 	}
 	
@@ -37,8 +37,8 @@ public class CafeController {
 	}
 	
 	@PostMapping
-	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @RequestBody Cafe cafe, Principal user) {
-		System.out.println(user);
+	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @RequestBody Cafe cafe) {
+		cafe.setAppUser(new AppUser(userDetails.getId()));
 		return cafeRepo.save(cafe);
 	}
 	

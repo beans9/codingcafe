@@ -19,6 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (appUser == null) {
 			throw new UsernameNotFoundException(username);
 		}
+		
 		return new LoginUserDetails(appUser);
 	}
 }

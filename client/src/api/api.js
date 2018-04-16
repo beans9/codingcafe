@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:8080'
+const BASE_URL = 'http://localhost:8090'
 
 const enhanceAccessToeken = () => {
   const {accessToken} = localStorage
@@ -41,12 +41,18 @@ let users = {
       authProc(res.data)
       return 0
     })
+  },
+  getInfo: function () {
+    return axios.get(this.baseUrl).then(res => {
+      return res.data
+    })
   }
 }
 
 function authProc (user) {
   localStorage.accessToken = user.token
   localStorage.userName = user.username
+  localStorage.userId = user.id
   axios.defaults.headers.common['Authorization'] = `${user.token}`
 }
 

@@ -1,5 +1,6 @@
 package com.beans9.app.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,7 +18,9 @@ import lombok.Setter;
 public class AppUser {
 	@Id
 	@GeneratedValue
+	@Column(name="USER_ID")
 	private long id;
+	
 	private String username;
 
 	@JsonProperty(access = Access.WRITE_ONLY)
@@ -25,4 +28,9 @@ public class AppUser {
 	
 	@Transient
 	private String token;
+	
+	public AppUser() {}
+	public AppUser(long id) {
+		this.id = id;
+	}
 }

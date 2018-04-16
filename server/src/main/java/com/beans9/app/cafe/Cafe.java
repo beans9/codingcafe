@@ -3,6 +3,10 @@ package com.beans9.app.cafe;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+
+import com.beans9.app.user.AppUser;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +20,8 @@ public class Cafe {
 	private String name;
 	private String memo;
 	
-	private long userId;
+
+	@OneToOne
+	@JoinColumn(name="USER_ID")
+	private AppUser appUser;
 }
