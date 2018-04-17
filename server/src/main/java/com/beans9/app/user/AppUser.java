@@ -1,8 +1,8 @@
 package com.beans9.app.user;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
@@ -17,8 +17,7 @@ import lombok.Setter;
 @Setter
 public class AppUser {
 	@Id
-	@GeneratedValue
-	@Column(name="USER_ID")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
 	private String username;
@@ -27,6 +26,7 @@ public class AppUser {
 	private String password;
 	
 	@Transient
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String token;
 	
 	public AppUser() {}

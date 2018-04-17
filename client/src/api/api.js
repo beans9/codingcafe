@@ -5,7 +5,7 @@ const BASE_URL = 'http://localhost:8090'
 const enhanceAccessToeken = () => {
   const {accessToken} = localStorage
   if (!accessToken) return
-  axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+  axios.defaults.headers.common['Authorization'] = `${accessToken}`
 }
 enhanceAccessToeken()
 
