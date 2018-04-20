@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.beans9.app.security.SecurityUtil;
 
+import javassist.bytecode.DuplicateMemberException;
+
 @RestController
 @RequestMapping("/users")
 public class AppUserController {
@@ -34,10 +36,19 @@ public class AppUserController {
 	}
 	
 	@PostMapping("/sign-up")
-	public AppUser signUp(@RequestBody AppUser appUser) {
+	public AppUser signUp(@RequestBody AppUser appUser) throws Exception {
+		if(appUserRepo.findByEmail(appUser.getEmail()) != null) {
+			throw new Exception("user duplicated");
+		}
+		
+		appUser.setEmail(appUser.getEmail());
+		appUser.setUsername(appUser.getUsername());
 		appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
 		appUserRepo.save(appUser);
-		appUser.setToken(securityUtil.getToken(appUser.getUsername(), appUser.getId()));
+		
+		appUser.setToken(securityUtil.getToken(appUser.getUsername(), appUser.getEmail(), appUser.getId()));
 		return appUser;
 	}
+	
+	
 }

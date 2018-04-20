@@ -20,13 +20,13 @@ public class AppUser {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
+	private String email;
 	private String username;
 
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 	
 	@Transient
-	@JsonProperty(access = Access.WRITE_ONLY)
 	private String token;
 	
 	public AppUser() {}

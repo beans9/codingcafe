@@ -11,6 +11,7 @@ import lombok.Setter;
 public class LoginUserDetails extends User{
 	private static final long serialVersionUID = 1L;
 	private long id;
+	private String email;
 	    
 	public LoginUserDetails(AppUser user)
 	{
@@ -22,14 +23,16 @@ public class LoginUserDetails extends User{
 			
 		);
 		this.id = user.getId();
+		this.email = user.getEmail();
 	}
 	
-	public LoginUserDetails(String username, long userId) {
+	public LoginUserDetails(String username, String email, long userId) {
 		super(
 			username, 
 			"", 
 			emptyList()
 		);
 		this.id = userId;
+		this.email = email;
 	}
 }

@@ -19,8 +19,8 @@ export default {
   data () {
     return {
       user: {
-        username: '',
-        password: ''
+        username: 'b@b.com',
+        password: '1'
       },
       loginErrorFlag: false
     }

@@ -21,8 +21,6 @@ import com.beans9.app.user.LoginUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
-import net.minidev.json.JSONObject;
-
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	
 	private AuthenticationManager authenticationManager;
@@ -45,12 +43,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException {
 		LoginUserDetails loginUser = (LoginUserDetails) auth.getPrincipal();
-		String token = SecurityUtil.getToken(loginUser.getUsername(), loginUser.getId());
+		String token = SecurityUtil.getToken(loginUser.getUsername(), loginUser.getEmail(), loginUser.getId());
 		res.addHeader(HEADER_STRING, token);
 		ServletOutputStream resOut = res.getOutputStream();
 		
 		HashMap<String,Object> userInfo = new HashMap<String,Object>();
 		userInfo.put("token", token);
+		userInfo.put("email", loginUser.getEmail());
 		userInfo.put("username", loginUser.getUsername());
 		userInfo.put("id", loginUser.getId());
 		

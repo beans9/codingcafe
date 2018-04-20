@@ -2,7 +2,7 @@
   <div class="hello">
     회원정보
 
-    <p>아이디: {{user.id}}</p>
+    <p>이메일: {{user.email}}</p>
     <p>이름: {{user.username}}</p>
 
   </div>
@@ -16,6 +16,7 @@ export default {
     return {
       user: {
         id: '',
+        email: '',
         username: '',
         password: ''
       }

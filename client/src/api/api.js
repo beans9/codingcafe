@@ -3,9 +3,9 @@ import axios from 'axios'
 const BASE_URL = 'http://localhost:8090'
 
 const enhanceAccessToeken = () => {
-  const {accessToken} = localStorage
-  if (!accessToken) return
-  axios.defaults.headers.common['Authorization'] = `${accessToken}`
+  const {codingcafeToken} = localStorage
+  if (!codingcafeToken) return
+  axios.defaults.headers.common['Authorization'] = codingcafeToken
 }
 enhanceAccessToeken()
 
@@ -34,6 +34,8 @@ let users = {
     return axios.post(this.baseUrl + '/sign-up', params).then(res => {
       authProc(res.data)
       return 0
+    }).catch((e) => {
+      return e.response.data.message
     })
   },
   signIn: function (params) {
@@ -50,10 +52,11 @@ let users = {
 }
 
 function authProc (user) {
-  localStorage.accessToken = user.token
-  localStorage.userName = user.username
-  localStorage.userId = user.id
-  axios.defaults.headers.common['Authorization'] = `${user.token}`
+  localStorage.codingcafeToken = user.token
+  localStorage.codingcafeEmail = user.email
+  localStorage.codingcafeName = user.username
+  localStorage.codingcafeId = user.id
+  axios.defaults.headers.common['Authorization'] = user.token
 }
 
 export {cafes, users}

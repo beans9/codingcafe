@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <p v-if="loginFlag">{{username}}님 안녕하세요.</p>
+    <p v-if="loginFlag">{{userInfo.name}}({{userInfo.email}})님 안녕하세요.</p>
     <div class="menu">
       <router-link to="/cafe/write" v-if="loginFlag">입력</router-link>
       <router-link to="/user/signin" v-if="!loginFlag">로그인</router-link>
@@ -22,7 +22,10 @@ export default {
   data () {
     return {
       loginFlag: false,
-      username: ''
+      userInfo: {
+        name: '',
+        email: ''
+      }
     }
   },
   created: function () {
@@ -31,17 +34,19 @@ export default {
   },
   methods: {
     init: function () {
-      const {accessToken, userName} = localStorage
-      if (!accessToken) {
+      const {codingcafeToken} = localStorage
+      const {codingcafeName} = localStorage
+      const {codingcafeEmail} = localStorage
+      this.userInfo.name = codingcafeName
+      this.userInfo.email = codingcafeEmail
+      if (!codingcafeToken) {
         this.loginFlag = false
       } else {
         this.loginFlag = true
       }
-
-      this.username = userName
     },
     logout: function () {
-      delete localStorage.accessToken
+      delete localStorage.codingcafeToken
       this.init()
     }
   }

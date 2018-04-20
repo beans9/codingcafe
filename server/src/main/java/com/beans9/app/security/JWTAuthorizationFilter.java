@@ -3,6 +3,7 @@ package com.beans9.app.security;
 import static com.beans9.app.security.SecurityConstants.HEADER_STRING;
 import static com.beans9.app.security.SecurityConstants.SECRET;
 import static com.beans9.app.security.SecurityConstants.TOKEN_PREFIX;
+import static com.beans9.app.security.SecurityConstants.USER_EMAIL;
 import static com.beans9.app.security.SecurityConstants.USER_ID;
 
 import java.io.IOException;
@@ -51,10 +52,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 					.getBody();
 			
 			String user = data.getSubject();
-			
 			long id = Long.parseLong(data.get(USER_ID).toString());
+			String email = data.get(USER_EMAIL).toString();
 			
-			LoginUserDetails loginUser = new LoginUserDetails(user, id); 
+			LoginUserDetails loginUser = new LoginUserDetails(user, email, id); 
 			if (user != null) {
 				return new UsernamePasswordAuthenticationToken(loginUser, null, new ArrayList<>());
 			}

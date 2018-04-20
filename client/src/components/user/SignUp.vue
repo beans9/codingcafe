@@ -2,9 +2,11 @@
   <div class="hello">
     회원가입
 
-    <p>아이디: <input type="text" v-model="user.username"/></p>
+    <p>이메일: <input type="text" v-model="user.email"/></p>
+    <p>닉네임: <input type="text" v-model="user.username"/></p>
     <P>비밀번호: <input type="password" v-model="user.password" /></P>
     <input type="button" @click="proc()" value="회원가입"/>
+    <p class="error">{{signupErrMsg}}</p>
   </div>
 </template>
 
@@ -15,16 +17,24 @@ export default {
   data () {
     return {
       user: {
-        username: '',
-        password: ''
-      }
+        email: 'a@a.com',
+        username: 'a',
+        password: '1'
+      },
+      signupErrMsg: ''
     }
   },
   created: function () {},
   methods: {
     proc: function () {
+      this.singupErrMsg = ''
       users.signUp(this.user).then((res) => {
-        this.$router.push('/')
+        if (res === 0) {
+          this.$router.push('/')
+        } else {
+          console.log(res)
+          this.signupErrMsg = res
+        }
       })
     }
   }
@@ -35,5 +45,9 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+}
+
+.error {
+  color:red;
 }
 </style>
