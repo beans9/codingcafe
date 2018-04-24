@@ -39,10 +39,7 @@ let users = {
     })
   },
   signIn: function (params) {
-    return axios.post(`${BASE_URL}/login`, params).then(res => {
-      authProc(res.data)
-      return 0
-    })
+    return axios.post(`${BASE_URL}/login`, params).then(({data}) => data)
   },
   getInfo: function () {
     return axios.get(this.baseUrl).then(res => {

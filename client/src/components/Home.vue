@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <p v-if="loginFlag">{{userInfo.name}}({{userInfo.email}})님 안녕하세요.</p>
+    <p v-if="loginFlag">{{getUserInfo()}}{{userInfo.name}}({{userInfo.email}})님 안녕하세요.</p>
     <div class="menu">
       <router-link to="/cafe/write" v-if="loginFlag">입력</router-link>
       <router-link to="/user/signin" v-if="!loginFlag">로그인</router-link>
@@ -48,6 +48,12 @@ export default {
     logout: function () {
       delete localStorage.codingcafeToken
       this.init()
+    }
+  },
+  computed: {
+    getUserInfo () {
+      console.log(this.$store)
+      return this.$store
     }
   }
 }

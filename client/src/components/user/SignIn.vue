@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {users} from '@/api/api'
+// import {users} from '@/api/api'
 export default {
   name: 'UserSignIn',
   data () {
@@ -28,12 +28,18 @@ export default {
   created: function () {},
   methods: {
     proc: function () {
-      users.signIn(this.user).then((res) => {
-        this.loginErrorFlag = false
-        this.$router.push('/')
-      }).catch((e) => {
-        this.loginErrorFlag = true
-      })
+      console.log('store', this.$store)
+      this.$store.dispatch('LOGIN', this.user)
+        .then(() => this.$router.push('/'))
+        .catch(() => {
+          this.loginErrorFlag = true
+        })
+      // users.signIn(this.user).then((res) => {
+      //   this.loginErrorFlag = false
+      //   this.$router.push('/')
+      // }).catch((e) => {
+      //   this.loginErrorFlag = true
+      // })
     }
   }
 }
