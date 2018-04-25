@@ -57,7 +57,7 @@ export default {
       })
     },
     patch: function () {
-      this.$router.push('/cafe/'+ this.id +'/update')
+      this.$router.push('/cafe/' + this.id + '/update')
     },
     del: function () {
       cafes.del(this.id).then(() => {

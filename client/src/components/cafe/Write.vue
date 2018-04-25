@@ -3,6 +3,7 @@
     {{title}}
     <p>카페명: <input type="text" v-model="cafe.name"/></p>
     <P>설명: <textarea v-model="cafe.memo"></textarea></P>
+    <p>사진 <input type="file" id="file" ref="file" /></p>
     <input type="button" @click="proc()" value="저장"/>
   </div>
 </template>
@@ -23,7 +24,7 @@ export default {
   created: function () {},
   methods: {
     proc: function () {
-      cafes.insert(this.cafe).then((res) => {
+      cafes.insert(this.cafe, this.$refs.file.files).then((res) => {
         this.$router.push('/cafe/' + res.id)
       })
     }

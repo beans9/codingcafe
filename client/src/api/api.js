@@ -17,8 +17,17 @@ let cafes = {
   get: function (id) {
     return axios.get(cafes.baseUrl + '/' + id).then((res) => res.data)
   },
-  insert: function (params) {
-    return axios.post(cafes.baseUrl, params).then(res => res.data)
+  insert: function (params, files) {
+    let formData = new FormData()
+    formData.append('file', files[0])
+    for( var key in params ) {
+      formData.append(key, params[key])
+    }
+
+    return axios.post(cafes.baseUrl,
+      formData,
+      {headers: {'Content-Type': 'multipart/form-data'}}
+    ).then(res => res.data)
   },
   patch: function (params) {
     return axios.patch(cafes.baseUrl + '/' + params.id, params).then(res => res.data)
