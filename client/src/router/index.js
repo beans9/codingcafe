@@ -25,12 +25,12 @@ export default new Router({
       component: Home
     },
     {
-      path: '/cafe/write',
+      path: '/cafe/new',
       name: 'CafeWrite',
       component: CafeWrite
     },
     {
-      path: '/cafe/update/:id',
+      path: '/cafe/:id/update',
       name: 'CafeUpdate',
       component: CafeUpdate,
       props: true

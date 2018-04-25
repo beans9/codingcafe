@@ -28,23 +28,15 @@ export default {
   created: function () {},
   methods: {
     proc: function () {
-      console.log('store', this.$store)
       this.$store.dispatch('LOGIN', this.user)
         .then(() => this.$router.push('/'))
         .catch(() => {
           this.loginErrorFlag = true
         })
-      // users.signIn(this.user).then((res) => {
-      //   this.loginErrorFlag = false
-      //   this.$router.push('/')
-      // }).catch((e) => {
-      //   this.loginErrorFlag = true
-      // })
     }
   }
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1, h2 {

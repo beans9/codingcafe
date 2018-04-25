@@ -1,12 +1,12 @@
 <template>
   <div class="hello">
-    <p v-if="loginFlag">{{getUserInfo()}}{{userInfo.name}}({{userInfo.email}})님 안녕하세요.</p>
+    <p v-if="isAuthenticated">{{getUserInfo.name}}({{getUserInfo.email}})님 안녕하세요.</p>
     <div class="menu">
-      <router-link to="/cafe/write" v-if="loginFlag">입력</router-link>
-      <router-link to="/user/signin" v-if="!loginFlag">로그인</router-link>
-      <router-link to="/user/signup" v-if="!loginFlag">회원가입</router-link>
-      <router-link to="/user/info" v-if="loginFlag">회원정보</router-link>
-      <a href="#" @click="logout()" v-if="loginFlag">로그아웃</a>
+      <router-link to="/cafe/new" v-if="isAuthenticated">입력</router-link>
+      <router-link to="/user/signin" v-if="!isAuthenticated">로그인</router-link>
+      <router-link to="/user/signup" v-if="!isAuthenticated">회원가입</router-link>
+      <router-link to="/user/info" v-if="isAuthenticated">회원정보</router-link>
+      <a href="#" @click="logout()" v-if="isAuthenticated">로그아웃</a>
     </div>
     <CafeList></CafeList>
   </div>
@@ -14,47 +14,26 @@
 
 <script>
 import CafeList from '@/components/cafe/List.vue'
-import {EventBus} from '@/event-bus.js'
+// import {EventBus} from '@/event-bus.js'
+import {mapGetters} from 'vuex'
 
 export default {
   name: 'Home',
   components: {CafeList},
   data () {
-    return {
-      loginFlag: false,
-      userInfo: {
-        name: '',
-        email: ''
-      }
-    }
+    return {}
   },
-  created: function () {
-    EventBus.$on('loginProc', this.init)
-    this.init()
-  },
+  created: function () {},
   methods: {
-    init: function () {
-      const {codingcafeToken} = localStorage
-      const {codingcafeName} = localStorage
-      const {codingcafeEmail} = localStorage
-      this.userInfo.name = codingcafeName
-      this.userInfo.email = codingcafeEmail
-      if (!codingcafeToken) {
-        this.loginFlag = false
-      } else {
-        this.loginFlag = true
-      }
-    },
     logout: function () {
       delete localStorage.codingcafeToken
-      this.init()
+      this.$store.dispatch('LOGOUT')
     }
   },
   computed: {
-    getUserInfo () {
-      console.log(this.$store)
-      return this.$store
-    }
+    ...mapGetters([
+      'isAuthenticated', 'getUserInfo'
+    ])
   }
 }
 </script>

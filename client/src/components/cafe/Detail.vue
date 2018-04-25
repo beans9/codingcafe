@@ -14,14 +14,18 @@
     <p>
       설명 : {{cafe.memo}}
     </p>
-    <input type="button" @click="patch()" v-if="isModified" value="수정"/>
-    <input type="button" @click="del()" v-if="isModified" value="삭제"/>
+    <template v-if="isModified">
+      <input type="button" @click="patch()" value="수정"/>
+      <input type="button" @click="del()" value="삭제"/>
+    </template>
     <router-link to="/">리스트</router-link>
   </div>
 </template>
 
 <script>
 import {cafes} from '@/api/api'
+import {mapGetters} from 'vuex'
+
 export default {
   name: 'CafeDetail',
   props: ['id'],
@@ -33,21 +37,12 @@ export default {
         appUser: {
           username: ''
         }
-      },
-      isModified: false
+      }
     }
   },
   beforeRouteEnter (to, from, next) {
-    cafes.get(to.params.id).then((res) => {
-      next(vm => {
-        vm.cafe = res
-        let {userId} = localStorage
-        // console.log(res.appUser.id, res.appUser.id === userId)
-        if (userId === res.appUser.id.toString()) {
-          vm.isModified = true
-        }
-      })
-    }).catch((e) => { next(false) })
+    cafes.get(to.params.id).then((res) => next(vm => { vm.cafe = res }))
+      .catch((e) => next(false))
   },
   watch: {
     '$route': function (from, to) { this.init() }
@@ -62,12 +57,20 @@ export default {
       })
     },
     patch: function () {
-      this.$router.push('/cafe/update/' + this.id)
+      this.$router.push('/cafe/'+ this.id +'/update')
     },
     del: function () {
       cafes.del(this.id).then(() => {
         this.$router.push('/')
       })
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'isAuthenticated', 'getUserInfo'
+    ]),
+    isModified () {
+      return this.getUserInfo.id === this.cafe.appUser.id
     }
   }
 }
