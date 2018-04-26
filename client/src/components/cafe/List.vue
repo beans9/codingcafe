@@ -1,7 +1,14 @@
 <template>
   <div class="hello">
     <ul class="cafe-list">
-      <li v-for="item in list" v-bind:key="item.id" @click="detail(item)">{{item.name}}</li>
+      <li v-for="item in list" v-bind:key="item.id" @click="detail(item)">
+        <template v-if="item.photos.length > 0">
+          <img :src="imgSrc(item.photos[0].name)" class="img"/>
+        </template>
+        <template v-else>
+          {{item.name}}
+        </template>
+      </li>
     </ul>
     <p v-if="loading">
       loading...
@@ -31,6 +38,9 @@ export default {
   methods: {
     detail: function (item) {
       this.$router.push('/cafe/' + item.id)
+    },
+    imgSrc: function (fileName) {
+      return require('@/assets/images/' + fileName)
     }
   }
 }
@@ -55,5 +65,9 @@ h1, h2 {
 
 .cafe-list li+li {
   margin-left:10px;
+}
+
+.img {
+  width:100%;
 }
 </style>

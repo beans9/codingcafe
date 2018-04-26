@@ -1,5 +1,6 @@
 <template>
   <div class="hello">
+    <!-- <img src="@/assets/images/logo.png" /> -->
     <p v-if="isAuthenticated">{{getUserInfo.name}}({{getUserInfo.email}})님 안녕하세요.</p>
     <div class="menu">
       <router-link to="/cafe/new" v-if="isAuthenticated">입력</router-link>

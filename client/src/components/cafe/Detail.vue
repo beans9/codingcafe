@@ -4,6 +4,10 @@
     <p>
       게시물ID: {{id}}
     </p>
+    <p v-if="cafe.photos.length != 0">
+      이미지
+      <img :src="imgSrc(photo.name)" class="img" v-for="(photo,index) in cafe.photos" :key="index"/>
+    </p>
     <p>
       작성자: {{cafe.appUser.username}}
     </p>
@@ -36,7 +40,8 @@ export default {
         memo: '',
         appUser: {
           username: ''
-        }
+        },
+        photos: []
       }
     }
   },
@@ -63,6 +68,9 @@ export default {
       cafes.del(this.id).then(() => {
         this.$router.push('/')
       })
+    },
+    imgSrc: function (fileName) {
+      return require('@/assets/images/' + fileName)
     }
   },
   computed: {
@@ -80,5 +88,10 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+}
+
+.img {
+  width:500px;
+  border:1px solid #e6e6e6;
 }
 </style>

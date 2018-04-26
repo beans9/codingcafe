@@ -1,9 +1,12 @@
 package com.beans9.app.cafe;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 import javax.naming.AuthenticationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,22 +17,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.beans9.app.user.AppUser;
-import com.beans9.app.user.AppUserRepo;
 import com.beans9.app.user.LoginUserDetails;
 
 @RequestMapping("/cafe")
-@RestController					  
+@RestController
 public class CafeController {
-	@Autowired
-	CafeRepo cafeRepo;
+	@Autowired CafeRepo cafeRepo;
+	@Autowired PhotoRepo photoRepo;
 	
-	@Autowired
-	AppUserRepo appUserRepo;
-	 
 	@GetMapping
 	public Iterable<Cafe> select() {
 		return cafeRepo.findAll();
@@ -46,9 +46,21 @@ public class CafeController {
 	}
 	
 	@PostMapping
-	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @ModelAttribute Cafe cafe, MultipartFile file) {
+	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @ModelAttribute Cafe cafe, 
+			MultipartFile[] files) throws IllegalStateException, IOException {
 		cafe.setAppUser(new AppUser(userDetails.getId()));
-		return cafeRepo.save(cafe);
+		cafeRepo.save(cafe);
+		
+		for(MultipartFile file: files) {
+			String fileRealName = file.getOriginalFilename();
+			String fileName = System.currentTimeMillis() + "." +FilenameUtils.getExtension(fileRealName);
+			Photo photo = new Photo(fileName, fileRealName, file.getSize(), cafe);
+			File f = new File("C:\\project\\codingcafe\\client\\src\\assets\\images\\" + fileName);
+			file.transferTo(f);
+			photoRepo.save(photo);
+		}
+		
+		return cafe;
 	}
 	
 	@PatchMapping("/{id}")
