@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {users} from '@/api/api'
 import axios from 'axios'
 
 Vue.use(Vuex)
@@ -11,7 +10,7 @@ const localStorageKey = 'ccUserInfo'
 const checkLocalStorage = () => {
   let userInfo = localStorage[localStorageKey]
   if (!userInfo) return
-  store.dispatch('AUTOLOGIN', JSON.parse(userInfo))
+  store.dispatch('LOGIN', JSON.parse(userInfo))
 }
 
 const store = new Vuex.Store({
@@ -52,14 +51,8 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    AUTOLOGIN ({commit}, data) {
+    LOGIN ({commit}, data) {
       commit('LOGIN', data)
-    },
-    LOGIN ({commit}, params) {
-      return users.signIn(params)
-        .then((res) => {
-          commit('LOGIN', res)
-        })
     },
     LOGOUT ({commit}) {
       commit('LOGOUT')

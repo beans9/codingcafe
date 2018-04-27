@@ -1,4 +1,5 @@
 import axios from 'axios'
+import store from '@/store'
 
 const BASE_URL = 'http://localhost:8090'
 
@@ -45,28 +46,25 @@ let users = {
   baseUrl: `${BASE_URL}/users`,
   signUp: function (params) {
     return axios.post(this.baseUrl + '/sign-up', params).then(res => {
-      authProc(res.data)
+      store.dispatch('LOGIN', res.data)
       return 0
     }).catch((e) => {
       return e.response.data.message
     })
   },
   signIn: function (params) {
-    return axios.post(`${BASE_URL}/login`, params).then(({data}) => data)
+    return axios.post(`${BASE_URL}/login`, params).then(({data}) => {
+      store.dispatch('LOGIN', data)
+      return 0
+    }).catch((e) => {
+      return e.response.data.message
+    })
   },
   getInfo: function () {
     return axios.get(this.baseUrl).then(res => {
       return res.data
     })
   }
-}
-
-function authProc (user) {
-  localStorage.codingcafeToken = user.token
-  localStorage.codingcafeEmail = user.email
-  localStorage.codingcafeName = user.username
-  localStorage.codingcafeId = user.id
-  axios.defaults.headers.common['Authorization'] = user.token
 }
 
 export {cafes, users}

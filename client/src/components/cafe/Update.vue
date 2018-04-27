@@ -4,6 +4,27 @@
     <p>ID: {{id}}</p>
     <p>카페명: <input type="text" v-model="cafe.name"/></p>
     <P>설명: <textarea v-model="cafe.memo"></textarea></P>
+    <div>사진
+      <div>
+        <!-- 기존사진 -->
+        <div v-for="(photo,index) in cafe.photos" v-bind:key="'d' + index">
+          <img :src="imgSrc(photo.name)" class="img" @click="changeDefaultImg(photo)"/>
+          <input type="button" value="삭제" @click="delFile(photo)" />
+        </div>
+
+        <div v-for="(photo,index) in photos" v-if="photo.image != null" v-bind:key="index" v-bind:class="{active:photo.isDefault}">
+          <img :src="photo.image" class="img" @click="changeDefaultImg(photo)"/>
+          <input type="button" value="삭제" @click="delFile(photo)" />
+        </div>
+
+      </div>
+      <div v-for="(file,index) in photos" v-bind:key="index" >
+        <input type="file" id="files" ref="files" @change="handleFilesUpload($event, file)" v-show="file.isView"/>
+        <br/>
+      </div>
+      <!-- <input type="button" value="파일추가" @click="addFile()"/> -->
+    </div>
+
     <input type="button" @click="proc()" value="저장"/>
     <input type="button" @click="back()" value="뒤로"/>
   </div>
@@ -22,7 +43,9 @@ export default {
         name: '',
         memo: ''
       },
-      list: []
+      photos: [],
+      photosIdx: 0,
+      defultImgIdx: 0
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -33,7 +56,9 @@ export default {
   watch: {
     '$route': function (from, to) { this.get() }
   },
-  created: function () {},
+  created: function () {
+    this.addFile()
+  },
   methods: {
     get: function () {
       cafes.get(this.id).then((res) => {
@@ -49,6 +74,44 @@ export default {
     },
     back: function () {
       this.$router.go(-1)
+    },
+    addFile: function () {
+      this.photos.push({idx: this.photosIdx++, isView: true, image: null, isDefault: false})
+    },
+    delFile: function (photo) {
+      if (photo.isDefault === true) {
+        this.photos.filter((data) => data.image !== null)[0].isDefault = true
+      }
+
+      let photoIdx = this.photos.indexOf(photo)
+      this.photos.splice(photoIdx, 1)
+    },
+    changeDefaultImg: function (photo) {
+      if (this.photos.filter((data) => data.isDefault === true).length > 0) {
+        this.photos.filter((data) => data.isDefault === true)[0].isDefault = false
+      }
+      photo.isDefault = true
+    },
+    handleFilesUpload: function (e, file) {
+      var files = e.target.files || e.dataTransfer.files
+      if (!files.length) {
+        return
+      }
+      // let image = new Image()
+      let reader = new FileReader()
+      let vm = this
+      reader.onload = (e) => {
+        file.image = e.target.result
+        file.isView = false
+        if (this.photos.filter((data) => data.isDefault === true).length === 0) {
+          file.isDefault = true
+        }
+        vm.addFile()
+      }
+      reader.readAsDataURL(files[0])
+    },
+    imgSrc: function (fileName) {
+      return require('@/assets/images/' + fileName)
     }
   }
 }
@@ -58,5 +121,9 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+}
+
+.img {
+  width: 200px;
 }
 </style>

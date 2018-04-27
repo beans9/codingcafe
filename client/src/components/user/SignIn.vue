@@ -13,14 +13,15 @@
 </template>
 
 <script>
-// import {users} from '@/api/api'
+import {users} from '@/api/api'
+
 export default {
   name: 'UserSignIn',
   data () {
     return {
       user: {
-        username: 'b@b.com',
-        password: '1'
+        username: 'a@a.com',
+        password: 'a'
       },
       loginErrorFlag: false
     }
@@ -28,11 +29,14 @@ export default {
   created: function () {},
   methods: {
     proc: function () {
-      this.$store.dispatch('LOGIN', this.user)
-        .then(() => this.$router.push('/'))
-        .catch(() => {
+      this.loginErrorFlag = false
+      users.signIn(this.user).then((res) => {
+        if (res === 0) {
+          this.$router.push('/')
+        } else {
           this.loginErrorFlag = true
-        })
+        }
+      })
     }
   }
 }

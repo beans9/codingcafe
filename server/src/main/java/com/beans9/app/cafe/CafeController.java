@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,19 +46,19 @@ public class CafeController {
 	
 	@PostMapping
 	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @ModelAttribute Cafe cafe, 
-			MultipartFile[] files) throws IllegalStateException, IOException {
+			MultipartFile[] files, int defaultImgIdx) throws IllegalStateException, IOException {
 		cafe.setAppUser(new AppUser(userDetails.getId()));
 		cafeRepo.save(cafe);
 		
-		for(MultipartFile file: files) {
+		for(int i=0; i<files.length; i++) {
+			MultipartFile file = files[i];
 			String fileRealName = file.getOriginalFilename();
 			String fileName = System.currentTimeMillis() + "." +FilenameUtils.getExtension(fileRealName);
-			Photo photo = new Photo(fileName, fileRealName, file.getSize(), cafe);
+			Photo photo = new Photo(fileName, fileRealName, file.getSize(), cafe, defaultImgIdx==i);
 			File f = new File("C:\\project\\codingcafe\\client\\src\\assets\\images\\" + fileName);
 			file.transferTo(f);
 			photoRepo.save(photo);
 		}
-		
 		return cafe;
 	}
 	
@@ -75,6 +74,11 @@ public class CafeController {
 	public void delete(@AuthenticationPrincipal LoginUserDetails userDetails, @PathVariable long id) throws Exception {
 		authCheck(id, userDetails.getId());		
 		cafeRepo.deleteById(id);
+	}
+	
+	@DeleteMapping("/all")
+	public void deleteAll() throws Exception {
+		cafeRepo.deleteAll();
 	}
 	
 	public Cafe authCheck(long cafeId, long userId) throws Exception {

@@ -30,10 +30,11 @@ public class Photo {
 	private Cafe cafe;
 	
 	public Photo() {}
-	public Photo(String name, String realName, long size, Cafe cafe) {
+	public Photo(String name, String realName, long size, Cafe cafe, boolean isDefault) {
 		this.name = name;
 		this.realName = realName;
 		this.size = size;
 		this.cafe = cafe;
+		this.isDefault = isDefault;
 	}
 }

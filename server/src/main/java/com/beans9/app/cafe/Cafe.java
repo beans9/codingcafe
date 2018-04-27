@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
+import javax.persistence.OrderBy;
 
 import com.beans9.app.user.AppUser;
 
@@ -31,9 +31,6 @@ public class Cafe {
 	private AppUser appUser;
 	
 	@OneToMany(mappedBy="cafe")
-	// @OrderBy("defaultImg DESC")
+	@OrderBy("isDefault DESC")
 	private Collection<Photo> photos;
-	
-	@Transient
-	private int defaultImgIdx;
 }
