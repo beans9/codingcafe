@@ -91,7 +91,7 @@ h1, h2 {
 }
 
 .img {
-  width:500px;
+  width:200px;
   border:1px solid #e6e6e6;
 }
 </style>
