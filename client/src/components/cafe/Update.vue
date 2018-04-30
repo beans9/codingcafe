@@ -13,14 +13,17 @@
           {{photo}}
         </div>
 
-        <div v-for="(photo,index) in photos" v-if="photo.image != null" v-bind:key="index" v-bind:class="{active:photo.isDefault}">
+        <div v-for="(photo,index) in photos" v-if="photo.image != null" v-bind:key="index" v-bind:class="{active:photo.default}">
           <img :src="photo.image" class="img" @click="changeDefaultImg(photo)"/>
           <input type="button" value="삭제" @click="delFile(photo)" />
         </div>
 
       </div>
+      <div class="">
+        {{photos}}
+      </div>
       <div v-for="(file,index) in photos" v-bind:key="index" >
-        <input type="file" id="files" ref="files" @change="handleFilesUpload($event, file)" v-show="file.isView"/>
+        <input type="file" id="files" ref="files" @change="handleFilesUpload($event, file)" />[{{index}}]
         <br/>
       </div>
       <!-- <input type="button" value="파일추가" @click="addFile()"/> -->
@@ -77,7 +80,7 @@ export default {
       this.$router.go(-1)
     },
     addFile: function () {
-      this.photos.push({idx: this.photosIdx++, isView: true, image: null, isDefault: false})
+      this.photos.push({idx: this.photosIdx++, isView: true, image: null, default: false})
     },
     delDbFile: function (photo) {
       this.$set(photo, 'isDelete', !photo.isDelete)
@@ -88,24 +91,32 @@ export default {
         }
         photo.default = false
       }
+
+      if (photo.isDelete === false) {
+        let dbData = this.cafe.photos.filter((data) => data.default === true)
+        let newData = this.photos.filter((data) => data.default === true)
+        if (dbData.length === 0 && newData.length === 0) {
+          this.cafe.photos.filter((data) => data.isDelete !== true)[0].default = true
+        }
+      }
     },
     delFile: function (photo) {
-      if (photo.isDefault === true) {
-        this.photos.filter((data) => data.image !== null)[0].isDefault = true
+      if (photo.default === true) {
+        this.photos.filter((data) => data.image !== null)[0].default = true
       }
-
       let photoIdx = this.photos.indexOf(photo)
       this.photos.splice(photoIdx, 1)
     },
     changeDefaultImg: function (photo) {
       // db 데이터 이거나, 신규 추가 데이터 이거나
+      if (photo.isDelete) return
       let dbData = this.cafe.photos.filter((data) => data.default === true)
-      let newData = this.photos.filter((data) => data.isDefault === true)
+      let newData = this.photos.filter((data) => data.default === true)
       if (dbData.length > 0) {
         dbData[0].default = false
       }
       if (newData.length > 0) {
-        newData[0].isDefault = false
+        newData[0].default = false
       }
       photo.default = true
     },
@@ -120,8 +131,10 @@ export default {
       reader.onload = (e) => {
         file.image = e.target.result
         file.isView = false
-        if (this.photos.filter((data) => data.isDefault === true).length === 0) {
-          file.isDefault = true
+
+        let dbData = this.cafe.photos.filter((data) => data.default === true)
+        if (dbData.length === 0 && this.photos.filter((data) => data.default === true).length === 0) {
+          file.default = true
         }
         vm.addFile()
       }

@@ -19,12 +19,13 @@ let cafes = {
     return axios.get(cafes.baseUrl + '/' + id).then((res) => res.data)
   },
   insert: function (params, files, defaultImgIdx) {
+    debugger
     let formData = new FormData()
 
     for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i].files[0])
+      formData.append('files', files[i])
     }
-    formData.append('defaultImgIdx', defaultImgIdx)
+    formData.append('defaultImgIdx', 0)
     for (let key in params) {
       formData.append(key, params[key])
     }

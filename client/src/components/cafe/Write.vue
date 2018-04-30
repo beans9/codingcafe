@@ -4,17 +4,16 @@
     <p>카페명: <input type="text" v-model="cafe.name"/></p>
     <P>설명: <textarea v-model="cafe.memo"></textarea></P>
     <div>사진
-      <div>
-        <div v-for="(photo,index) in photos" v-if="photo.image != null" v-bind:key="index" v-bind:class="{active:photo.isDefault}">
+      <div :key="'p'+defultImgIdx">
+        <div v-for="(photo,index) in files" v-bind:key="index" v-bind:class="{active:photo.default}">
           <img :src="photo.image" class="img" @click="changeDefaultImg(photo)"/>
           <input type="button" value="삭제" @click="delFile(photo)" />
+          {{photo.default}}
         </div>
+
       </div>
-      <div v-for="(file,index) in photos" v-bind:key="index" >
-        <input type="file" id="files" ref="files" @change="handleFilesUpload($event, file)" v-show="file.isView"/>
-        <br/>
-      </div>
-      <!-- <input type="button" value="파일추가" @click="addFile()"/> -->
+      <input type="file" id="file" ref="file" multiple @change="handleFilesUpload($event, files)" style="display:none"/>
+      <input type="button" value="사진업로드" @click="photoUpload()" />
     </div>
     <input type="button" @click="proc()" value="저장"/>
   </div>
@@ -34,7 +33,9 @@ export default {
       },
       photos: [],
       photosIdx: 0,
-      defultImgIdx: 0
+      defultImgIdx: 0,
+      files: []
+
     }
   },
   created: function () {
@@ -50,46 +51,65 @@ export default {
         }
       }
 
-      cafes.insert(this.cafe, this.$refs.files, defaultImgIdx).then((res) => {
+      cafes.insert(this.cafe, this.files, defaultImgIdx).then((res) => {
         setTimeout(() => {
           this.$router.push('/cafe/' + res.id)
         }, 1000)
       })
     },
-    addFile: function () {
-      this.photos.push({idx: this.photosIdx++, isView: true, image: null, isDefault: false})
+    addFile: function (image, def) {
+      console.log('add')
+      this.files.push({idx: this.photosIdx++, isView: true, image: image, default: def})
     },
     delFile: function (photo) {
-      if (photo.isDefault === true) {
-        this.photos.filter((data) => data.image !== null)[0].isDefault = true
-      }
-
-      let photoIdx = this.photos.indexOf(photo)
-      this.photos.splice(photoIdx, 1)
+      // if (photo.isDefault === true) {
+      //   this.photos.filter((data) => data.image !== null)[0].isDefault = true
+      // }
+      let photoIdx = this.files.indexOf(photo)
+      console.log(photoIdx)
+      this.files.splice(photoIdx, 1)
     },
     changeDefaultImg: function (photo) {
-      if (this.photos.filter((data) => data.isDefault === true).length > 0) {
-        this.photos.filter((data) => data.isDefault === true)[0].isDefault = false
-      }
-      photo.isDefault = true
+      console.log(photo)
+      photo.default = true
+      // this.photos.filter((data) => data.default === true)[0].default = false
+      // this.$set(photo, 'default', true)
     },
-    handleFilesUpload: function (e, file) {
-      var files = e.target.files || e.dataTransfer.files
+    handleFilesUpload: function (e, photos) {
+      let files = e.target.files || e.dataTransfer.files
       if (!files.length) {
         return
       }
-      // let image = new Image()
-      let reader = new FileReader()
+
       let vm = this
-      reader.onload = (e) => {
-        file.image = e.target.result
-        file.isView = false
-        if (this.photos.filter((data) => data.isDefault === true).length === 0) {
-          file.isDefault = true
+      for (let i = 0; i < files.length; i++) {
+        let reader = new FileReader()
+        reader.onload = (e) => {
+          files[i].image = e.target.result
+          files[i].default = false
+          // this.$set(files[i], 'image', e.target.result)
+          // console.log(file.images)
+          // file.isView = false
+          // if (this.photos.filter((data) => data.isDefault === true).length === 0) {
+          //   file.isDefault = true
+          // }
+          // vm.addFile()
+          // this.defultImgIdx = 'p' + this.photosIdx++
+          // if (this.files.length === 0) file.default = true
+          vm.addFile(e.target.result, false)
+          // photos.push(files[i])
         }
-        vm.addFile()
+        reader.readAsDataURL(files[i])
       }
-      reader.readAsDataURL(files[0])
+      // this.files = this.files.concat(files)
+      // this.files = files
+    },
+    setFile: function (files) {
+      this.files.push(files)
+    },
+    photoUpload: function () {
+      this.$refs.file.value = ''
+      this.$refs.file.click()
     }
   }
 }
