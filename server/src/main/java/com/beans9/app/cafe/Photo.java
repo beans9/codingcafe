@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,11 +21,12 @@ public class Photo {
 	private String name;
 	private String realName;
 	private long size;
-	private boolean isDefault;
+	private boolean isDefault = false;
+	private boolean isDelete = false;
 	
 	@JsonIgnore
 	@ManyToOne
-	@JoinColumn(name="cafe_id")
+	// @JoinColumn(name="cafe_id")
 	private Cafe cafe;
 	
 	public Photo() {}

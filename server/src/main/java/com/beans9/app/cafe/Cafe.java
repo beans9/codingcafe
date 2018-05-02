@@ -11,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
+import org.hibernate.annotations.Where;
+
 import com.beans9.app.user.AppUser;
 
 import lombok.Getter;
@@ -26,11 +28,15 @@ public class Cafe {
 	private String name;
 	private String memo;
 
+	boolean isDelete = false;
+	
 	@OneToOne
 	@JoinColumn(name="appUser_id")
 	private AppUser appUser;
 	
 	@OneToMany(mappedBy="cafe")
+	@Where(clause = "is_delete=false")
 	@OrderBy("isDefault DESC")
 	private Collection<Photo> photos;
+	
 }

@@ -3,6 +3,7 @@ package com.beans9.app.cafe;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import javax.naming.AuthenticationException;
 
@@ -12,10 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +30,7 @@ public class CafeController {
 	
 	@GetMapping
 	public Iterable<Cafe> select() {
-		return cafeRepo.findAll();
+		return cafeRepo.findAllByIsDelete(false);
 	}
 	
 	@GetMapping("/{id}")
@@ -51,34 +50,71 @@ public class CafeController {
 		cafeRepo.save(cafe);
 		
 		for(int i=0; i<files.length; i++) {
-			MultipartFile file = files[i];
-			String fileRealName = file.getOriginalFilename();
-			String fileName = System.currentTimeMillis() + "." +FilenameUtils.getExtension(fileRealName);
-			Photo photo = new Photo(fileName, fileRealName, file.getSize(), cafe, defaultImgIdx==i);
-			File f = new File("C:\\project\\codingcafe\\client\\src\\assets\\images\\" + fileName);
-			file.transferTo(f);
+			Photo photo = copyFile(files[i], cafe, defaultImgIdx==i);
 			photoRepo.save(photo);
 		}
+		
 		return cafe;
 	}
 	
-	@PatchMapping("/{id}")
-	public Cafe patch(@AuthenticationPrincipal LoginUserDetails userDetails, @PathVariable long id, @RequestBody Cafe cafe) throws Exception {
-		Cafe db = authCheck(id, userDetails.getId());
+	@PostMapping("/{id}")
+	public Cafe patch(@AuthenticationPrincipal LoginUserDetails userDetails, 
+			@ModelAttribute Cafe cafe,
+			MultipartFile[] files, 
+			Integer defaultImgIdx,
+			Integer defaultImgIdxDb,
+			long[] deleteImgIds
+			) throws Exception {
+		Cafe db = authCheck(cafe.getId(), userDetails.getId());
 		db.setName(cafe.getName());
 		db.setMemo(cafe.getMemo());
+		
+		if (deleteImgIds != null ) {
+			for (Photo photo: db.getPhotos()) {
+				if (LongStream.of(deleteImgIds).anyMatch(x->x == photo.getId())) {
+					if(photo.isDefault()) photo.setDefault(false);
+					photo.setDelete(true);
+				}
+			}
+		}
+		
+		if (defaultImgIdx != null) {
+			for (Photo photo: db.getPhotos()) {
+				if (photo.isDefault()) {
+					photo.setDefault(false);
+					break;
+				}
+			}
+		}
+		
+		for(int i=0; i<files.length; i++) {
+			Photo photo = copyFile(files[i], cafe, defaultImgIdx==i);
+			photoRepo.save(photo);
+		}
+		
 		return cafeRepo.save(db);
 	}
 	
 	@DeleteMapping("/{id}")
 	public void delete(@AuthenticationPrincipal LoginUserDetails userDetails, @PathVariable long id) throws Exception {
-		authCheck(id, userDetails.getId());		
-		cafeRepo.deleteById(id);
+		Cafe cafe = authCheck(id, userDetails.getId());		
+		cafe.setDelete(true);
+		cafeRepo.save(cafe);
+		// cafeRepo.deleteById(id);
 	}
 	
 	@DeleteMapping("/all")
 	public void deleteAll() throws Exception {
 		cafeRepo.deleteAll();
+	}
+	
+	public Photo copyFile(MultipartFile file, Cafe cafe, boolean isDefault) throws IllegalStateException, IOException {
+		String fileRealName = file.getOriginalFilename();
+		String fileName = System.currentTimeMillis() + "." +FilenameUtils.getExtension(fileRealName);
+		Photo photo = new Photo(fileName, fileRealName, file.getSize(), cafe, isDefault);
+		File f = new File("C:\\project\\codingcafe\\client\\src\\assets\\images\\" + fileName);
+		file.transferTo(f);
+		return photo;
 	}
 	
 	public Cafe authCheck(long cafeId, long userId) throws Exception {

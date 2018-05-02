@@ -18,14 +18,14 @@ let cafes = {
   get: function (id) {
     return axios.get(cafes.baseUrl + '/' + id).then((res) => res.data)
   },
-  insert: function (params, files, defaultImgIdx) {
-    debugger
+  insert: function (params, files) {
     let formData = new FormData()
-
+    let defaultImgIdx = 0
     for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i])
+      if (files[i].default === true) defaultImgIdx = i
+      formData.append('files', files[i].file)
     }
-    formData.append('defaultImgIdx', 0)
+    formData.append('defaultImgIdx', defaultImgIdx)
     for (let key in params) {
       formData.append(key, params[key])
     }
@@ -35,8 +35,40 @@ let cafes = {
       {headers: {'Content-Type': 'multipart/form-data'}}
     ).then(res => res.data)
   },
-  patch: function (params) {
-    return axios.patch(cafes.baseUrl + '/' + params.id, params).then(res => res.data)
+  patch: function (params, files) {
+    let formData = new FormData()
+    let dbFileCount = 0
+    for (let i = 0; i < files.length; i++) {
+      // DB이미지중 삭제할 이미지
+      if (files[i].isDelete === true) {
+        formData.append('deleteImgIds', files[i].id)
+      }
+      // 신규 이미지
+      if (files[i].id === null) {
+        formData.append('files', files[i].file)
+      } else {
+        dbFileCount++
+      }
+
+      if (files[i].default === true) {
+        if (files[i].id === null) {
+          formData.append('defaultImgIdx', i - dbFileCount)
+        } else {
+          formData.append('defaultImgIdxDb', files[i].id)
+        }
+      }
+    }
+    // 기존 파라미터
+    formData.append('name', params['name'])
+    formData.append('memo', params['memo'])
+    // for (let key in params) {
+    //   formData.append(key, params[key])
+    // }
+
+    return axios.post(cafes.baseUrl + '/' + params.id,
+      formData,
+      {headers: {'Content-Type': 'multipart/form-data'}}
+    ).then(res => res.data)
   },
   del: function (id) {
     return axios.delete(cafes.baseUrl + '/' + id)

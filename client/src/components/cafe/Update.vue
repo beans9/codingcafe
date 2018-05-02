@@ -7,26 +7,13 @@
     <div>사진
       <div>
         <!-- 기존사진 -->
-        <div v-for="(photo,index) in cafe.photos" v-bind:key="'d' + index" v-bind:class="{active:photo.default, delete:photo.isDelete}">
-          <img :src="imgSrc(photo.name)" class="img" @click="changeDefaultImg(photo)"/>
-          <input type="button" :value="delBtnTitle(photo.isDelete)" @click="delDbFile(photo)" />
-          {{photo}}
+        <div v-for="(photo,index) in files" v-bind:key="index" v-bind:class="{active:photo.default, delete:photo.isDelete}">
+          <img :src="imgSrc(photo)" class="img" @click="changeDefaultImg(photo)" />
+          <input type="button" :value="delBtnTitle(photo.isDelete)" @click="delFile(photo)" />
         </div>
-
-        <div v-for="(photo,index) in photos" v-if="photo.image != null" v-bind:key="index" v-bind:class="{active:photo.default}">
-          <img :src="photo.image" class="img" @click="changeDefaultImg(photo)"/>
-          <input type="button" value="삭제" @click="delFile(photo)" />
-        </div>
-
+        <input type="file" id="file" ref="file" multiple @change="handleFilesUpload($event, files)" style="display:none"/>
+        <input type="button" value="사진업로드" @click="photoUpload()" />
       </div>
-      <div class="">
-        {{photos}}
-      </div>
-      <div v-for="(file,index) in photos" v-bind:key="index" >
-        <input type="file" id="files" ref="files" @change="handleFilesUpload($event, file)" />[{{index}}]
-        <br/>
-      </div>
-      <!-- <input type="button" value="파일추가" @click="addFile()"/> -->
     </div>
 
     <input type="button" @click="proc()" value="저장"/>
@@ -47,22 +34,23 @@ export default {
         name: '',
         memo: ''
       },
-      photos: [],
-      photosIdx: 0,
-      defultImgIdx: 0
+      files: []
     }
   },
   beforeRouteEnter (to, from, next) {
     cafes.get(to.params.id).then((res) => {
-      next(vm => { vm.cafe = res })
+      next(vm => {
+        vm.cafe = res
+        for (let i = 0; i < vm.cafe.photos.length; i++) {
+          vm.addDbFile(vm.cafe.photos[i])
+        }
+      })
     }).catch((e) => { next(false) })
   },
   watch: {
     '$route': function (from, to) { this.get() }
   },
-  created: function () {
-    this.addFile()
-  },
+  created: function () {},
   methods: {
     get: function () {
       cafes.get(this.id).then((res) => {
@@ -72,76 +60,67 @@ export default {
       })
     },
     proc: function () {
-      cafes.patch(this.cafe).then((res) => {
+      cafes.patch(this.cafe, this.files).then((res) => {
         this.$router.replace('/cafe/' + res.id)
       })
     },
     back: function () {
       this.$router.go(-1)
     },
-    addFile: function () {
-      this.photos.push({idx: this.photosIdx++, isView: true, image: null, default: false})
+    addDbFile: function (file) {
+      let def = this.files.filter((data) => data.default === true).length === 0
+      this.files.push({id: file.id, image: null, default: def, file: null, isDelete: false, name: file.name})
     },
-    delDbFile: function (photo) {
-      this.$set(photo, 'isDelete', !photo.isDelete)
-      if (photo.default === true) {
-        let dbData = this.cafe.photos.filter((data) => data.isDelete !== true)
-        if (dbData.length > 0) {
-          dbData[0].default = true
-        }
-        photo.default = false
-      }
-
-      if (photo.isDelete === false) {
-        let dbData = this.cafe.photos.filter((data) => data.default === true)
-        let newData = this.photos.filter((data) => data.default === true)
-        if (dbData.length === 0 && newData.length === 0) {
-          this.cafe.photos.filter((data) => data.isDelete !== true)[0].default = true
-        }
-      }
+    addFile: function (image, file) {
+      let def = this.files.filter((data) => data.default === true).length === 0
+      this.files.push({id: null, image: image, default: def, file: file, isDelete: false, name: null})
     },
     delFile: function (photo) {
       if (photo.default === true) {
-        this.photos.filter((data) => data.image !== null)[0].default = true
+        let filterData = this.files.filter((data) => data.isDelete !== true && data.default === false)
+        if (filterData.length > 0) filterData[0].default = true
+        photo.default = false
       }
-      let photoIdx = this.photos.indexOf(photo)
-      this.photos.splice(photoIdx, 1)
+
+      if (photo.id !== null) {
+        photo.isDelete = !photo.isDelete
+        if (photo.isDelete === false && this.files.filter((data) => data.default === true).length === 0) {
+          photo.default = true
+        }
+      } else {
+        this.files.splice(this.files.indexOf(photo), 1)
+      }
     },
     changeDefaultImg: function (photo) {
-      // db 데이터 이거나, 신규 추가 데이터 이거나
       if (photo.isDelete) return
-      let dbData = this.cafe.photos.filter((data) => data.default === true)
-      let newData = this.photos.filter((data) => data.default === true)
-      if (dbData.length > 0) {
-        dbData[0].default = false
-      }
-      if (newData.length > 0) {
-        newData[0].default = false
-      }
+      this.files.filter((data) => data.default === true)[0].default = false
       photo.default = true
     },
     handleFilesUpload: function (e, file) {
-      var files = e.target.files || e.dataTransfer.files
+      let files = e.target.files || e.dataTransfer.files
       if (!files.length) {
         return
       }
-      // let image = new Image()
-      let reader = new FileReader()
-      let vm = this
-      reader.onload = (e) => {
-        file.image = e.target.result
-        file.isView = false
 
-        let dbData = this.cafe.photos.filter((data) => data.default === true)
-        if (dbData.length === 0 && this.photos.filter((data) => data.default === true).length === 0) {
-          file.default = true
+      let vm = this
+      for (let i = 0; i < files.length; i++) {
+        let reader = new FileReader()
+        reader.onload = (e) => {
+          vm.addFile(e.target.result, files[i])
         }
-        vm.addFile()
+        reader.readAsDataURL(files[i])
       }
-      reader.readAsDataURL(files[0])
     },
-    imgSrc: function (fileName) {
-      return require('@/assets/images/' + fileName)
+    imgSrc: function (photo) {
+      if (photo.name === null) {
+        return photo.image
+      } else {
+        return require('@/assets/images/' + photo.name)
+      }
+    },
+    photoUpload: function () {
+      this.$refs.file.value = ''
+      this.$refs.file.click()
     },
     delBtnTitle: function (flag) {
       return flag ? '취소' : '삭제'
