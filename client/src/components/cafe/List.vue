@@ -1,13 +1,13 @@
 <template>
-  <div class="hello">
+  <div class="list">
     <ul class="cafe-list">
-      <li v-for="item in list" v-bind:key="item.id" @click="detail(item)">
-        <template v-if="item.photos.length > 0">
-          <img :src="imgSrc(item.photos[0].name)" class="img"/>
-        </template>
-        <template v-else>
-          {{item.name}}
-        </template>
+      <li v-for="item in list" v-bind:key="item.id">
+        <a class="cafe-list-anchor" @click="detail(item)">
+            <span class="cafe-list-anchor-title">{{item.name}}</span>
+            <template v-if="item.photos.length > 0">
+              <img :src="imgSrc(item.photos[0].name)" class="cafe-list-anchor-cover"/>
+            </template>
+        </a>
       </li>
     </ul>
     <p v-if="loading">
@@ -47,25 +47,106 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
+<style lang="scss" scoped>
+@import "~styles/_mixin.scss";
+
+.list {
+  /* border:1px solid red; */
+  padding-top:30px;
+  width:1200px;
+  @include respond-to('large') {
+    width:1080px;
+  }
+  @include respond-to('medium') {
+    width:992px;
+  }
+  @include respond-to('small') {
+    width:767px;
+  }
+  margin:0 auto;
+  // border:1px solid red;
+  text-align: left;
 }
 
 .cafe-list li{
   list-style: none;
-  display:inline-block;
-  width:10em;
-  height:10em;
-  line-height:10em;
-  vertical-align: top;
-  border:1px solid black;
-  cursor:pointer;
+  float:left;
+  width:25%;
+  padding-top:25%;
+  position:relative;
+  font-size:18px;
+  // @include respond-to('large') {
+  //   width:300px;
+  //   height:300px;
+  //   margin-left:45px;
+  //   margin-top:45px;
+  // }
+  // @include respond-to('medium') {
+  //   width:275px;
+  //   height:275px;
+  //   margin-left:35px;
+  //   margin-top:35px;
+  // }
+  // @include respond-to('small') {
+  //   width:200px;
+  //   height:200px;
+  //   margin-left:35px;
+  //   margin-top:35px;
+  // }
 }
 
-.cafe-list li+li {
-  margin-left:10px;
+.cafe-list-anchor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: 1rem;
+  overflow: hidden;
+  padding: 1rem;
+  font-size: 2rem;
+  opacity: 0.6;
+  cursor: pointer;
+  border:1px solid #999;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: all .3s;
+
+  &-cover {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    font-size:1rem;
+  }
+
+  &-title {
+    position: relative;
+    font-size:1.5rem;
+    display:inline-block;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+    z-index: 30;
+    text-align: center;
+    color:black;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
 }
+
+.cafe-list-anchor:hover {
+    opacity: 1;
+    font-size:1.8rem;
+    // font-size: 2rem;
+    transform: scale(1.02);
+    // margin: -1px;
+    // padding: 2rem;
+    z-index: 20;
+    // border-width: 0.5rem;
+    // border-radius: 0.5rem;
+    // box-shadow: 0 0 2rem 1rem rgba(0,0,0,0.5);
+}
+
 
 .img {
   width:100%;

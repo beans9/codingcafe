@@ -2,8 +2,33 @@
   <div class="hello">
     {{title}}
     <p>ID: {{id}}</p>
-    <p>카페명: <input type="text" v-model="cafe.name"/></p>
-    <P>설명: <textarea v-model="cafe.memo"></textarea></P>
+    <p>카페명*: <input type="text" v-model="cafe.name" />
+      <span v-if="cafe.nameErr" class="err">카페명을 입력하십시오</span>
+    </p>
+    <p>주소*: <input type="text" v-model="cafe.address" placeholder="ex)성남시 분당구, 백현카페거리"/>
+      <span v-if="cafe.addressErr" class="err">주소를 입력하십시오</span>
+    </p>
+    <p>주차정보:
+      <label>가능 <input type="radio" name="parking" v-model="cafe.parking" value="true"/></label>
+      <label>불가능 <input type="radio" name="parking" v-model="cafe.parking" value="false"/></label>
+    </p>
+    <p>무선랜정보:
+      <label>가능 <input type="radio" name="wifi" v-model="cafe.wifi" value="true"/></label>
+      <label>불가능 <input type="radio" name="wifi" v-model="cafe.wifi" value="false"/></label>
+    </p>
+
+    <p>전원콘센트 유무:
+      <label>있음 <input type="radio" name="concent" v-model="cafe.concent" value="true"/></label>
+      <label>없음 <input type="radio" name="concent" v-model="cafe.concent" value="false"/></label>
+    </p>
+    <p>재방문의사
+      <label>있음 <input type="radio" name="reVisit" v-model="cafe.reVisit" value="true"/></label>
+      <label>없음 <input type="radio" name="reVisit" v-model="cafe.reVisit" value="false"/></label>
+    </p>
+    <P>기타설명: <textarea v-model="cafe.memo"></textarea></P>
+    <p>태그:
+      <input type="text" v-model="cafe.tag" placeholder="#으로 구분해서 적어주세요"/>
+    </p>
     <div>사진
       <div>
         <!-- 기존사진 -->
@@ -32,7 +57,15 @@ export default {
       cafe: {
         id: null,
         name: '',
-        memo: ''
+        nameErr: false,
+        memo: '',
+        address: '',
+        addressErr: false,
+        parking: 0,
+        concent: 0,
+        wifi: 0,
+        reVisit: 0,
+        tag: ''
       },
       files: []
     }

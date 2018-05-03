@@ -1,8 +1,33 @@
 <template>
   <div class="hello">
     {{title}}
-    <p>카페명: <input type="text" v-model="cafe.name"/></p>
-    <P>설명: <textarea v-model="cafe.memo"></textarea></P>
+    <p>카페명*: <input type="text" v-model="cafe.name" />
+      <span v-if="cafe.nameErr" class="err">카페명을 입력하십시오</span>
+    </p>
+    <p>주소*: <input type="text" v-model="cafe.address" placeholder="ex)성남시 분당구, 백현카페거리"/>
+      <span v-if="cafe.addressErr" class="err">주소를 입력하십시오</span>
+    </p>
+    <p>주차정보:
+      <label>가능 <input type="radio" name="parking" v-model="cafe.parking" value="1"/></label>
+      <label>불가능 <input type="radio" name="parking" v-model="cafe.parking" value="0"/></label>
+    </p>
+    <p>무선랜정보:
+      <label>가능 <input type="radio" name="wifi" v-model="cafe.wifi" value="1"/></label>
+      <label>불가능 <input type="radio" name="wifi" v-model="cafe.wifi" value="0"/></label>
+    </p>
+
+    <p>전원콘센트 유무:
+      <label>있음 <input type="radio" name="concent" v-model="cafe.concent" value="1"/></label>
+      <label>없음 <input type="radio" name="concent" v-model="cafe.concent" value="0"/></label>
+    </p>
+    <p>재방문의사
+      <label>있음 <input type="radio" name="reVisit" v-model="cafe.reVisit" value="1"/></label>
+      <label>없음 <input type="radio" name="reVisit" v-model="cafe.reVisit" value="0"/></label>
+    </p>
+    <P>기타설명: <textarea v-model="cafe.memo"></textarea></P>
+    <p>태그:
+      <input type="text" v-model="cafe.tag" placeholder="#으로 구분해서 적어주세요"/>
+    </p>
     <div>사진
       <div v-for="(photo,index) in files" v-bind:key="index" v-bind:class="{active:photo.default}">
         <img :src="photo.image" class="img" @click="changeDefaultImg(photo)"/>
@@ -27,7 +52,15 @@ export default {
       title: '입력',
       cafe: {
         name: '',
-        memo: ''
+        nameErr: false,
+        memo: '',
+        address: '',
+        addressErr: false,
+        parking: 0,
+        concent: 0,
+        wifi: 0,
+        reVisit: 0,
+        tag: ''
       },
       files: []
     }
@@ -37,11 +70,28 @@ export default {
   },
   methods: {
     proc: function () {
-      cafes.insert(this.cafe, this.files).then((res) => {
-        setTimeout(() => {
-          this.$router.push('/cafe/' + res.id)
-        }, 1000)
-      })
+      if (this.formValidation()) {
+        cafes.insert(this.cafe, this.files).then((res) => {
+          setTimeout(() => {
+            this.$router.push('/cafe/' + res.id)
+          }, 1000)
+        })
+      }
+    },
+    formValidation: function () {
+      let isCheck = true
+      this.cafe.nameErr = false
+      this.cafe.addressErr = false
+
+      if (this.cafe.name === '') {
+        this.cafe.nameErr = true
+        isCheck = false
+      }
+      if (this.cafe.address === '') {
+        this.cafe.addressErr = true
+        isCheck = false
+      }
+      return isCheck
     },
     addFile: function (image, file) {
       let def = this.files.filter((data) => data.default === true).length === 0
@@ -96,5 +146,9 @@ h1, h2 {
 
 .active {
   border:2px solid red;
+}
+
+.err {
+  color:red;
 }
 </style>

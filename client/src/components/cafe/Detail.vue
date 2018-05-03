@@ -11,13 +11,18 @@
     <p>
       작성자: {{cafe.appUser.username}}
     </p>
-
     <p>
       이름 : {{cafe.name}}
     </p>
     <p>
-      설명 : {{cafe.memo}}
+      주소 : {{cafe.address}}
     </p>
+    <p>주차정보: {{cafe.parking===true?'가능':'불가능'}}</p>
+    <p>무선랜정보: {{cafe.wifi===true?'가능':'불가능'}}</p>
+    <p>전원콘센트: {{cafe.concent===true?'있음':'없음'}}</p>
+    <p>재방문의사: {{cafe.reVisit===true?'있음':'없음'}}</p>
+    <P>기타설명: {{cafe.memo}}</P>
+    <p>태그:</p>
     <template v-if="isModified">
       <input type="button" @click="patch()" value="수정"/>
       <input type="button" @click="del()" value="삭제"/>
@@ -37,7 +42,15 @@ export default {
     return {
       cafe: {
         name: '',
+        nameErr: false,
         memo: '',
+        address: '',
+        addressErr: false,
+        parking: 0,
+        concent: 0,
+        wifi: 0,
+        reVisit: 0,
+        tag: '',
         appUser: {
           username: ''
         },

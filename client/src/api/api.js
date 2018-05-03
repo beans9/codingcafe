@@ -59,11 +59,10 @@ let cafes = {
       }
     }
     // 기존 파라미터
-    formData.append('name', params['name'])
-    formData.append('memo', params['memo'])
-    // for (let key in params) {
-    //   formData.append(key, params[key])
-    // }
+    let keys = ['name', 'memo', 'wifi', 'parking', 'concent', 'reVisit', 'tag', 'address']
+    for (let i = 0; i < keys.length; i++) {
+      formData.append(keys[i], params[keys[i]])
+    }
 
     return axios.post(cafes.baseUrl + '/' + params.id,
       formData,

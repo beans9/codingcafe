@@ -26,7 +26,12 @@ public class Cafe {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;	
 	private String name;
+	private String address;
 	private String memo;
+	private boolean parking;
+	private boolean concent;
+	private boolean wifi;
+	private boolean reVisit;
 
 	boolean isDelete = false;
 	

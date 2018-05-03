@@ -68,6 +68,11 @@ public class CafeController {
 		Cafe db = authCheck(cafe.getId(), userDetails.getId());
 		db.setName(cafe.getName());
 		db.setMemo(cafe.getMemo());
+		db.setAddress(cafe.getAddress());
+		db.setParking(cafe.isParking());
+		db.setWifi(cafe.isWifi());
+		db.setConcent(cafe.isConcent());
+		db.setReVisit(cafe.isReVisit());
 		
 		if (deleteImgIds != null ) {
 			for (Photo photo: db.getPhotos()) {
