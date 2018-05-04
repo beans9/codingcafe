@@ -1,14 +1,18 @@
 package com.beans9.app.cafe;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.LongStream;
 
+import javax.imageio.ImageIO;
 import javax.naming.AuthenticationException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
+import org.imgscalr.Scalr.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +29,19 @@ import com.beans9.app.user.LoginUserDetails;
 @RequestMapping("/cafe")
 @RestController
 public class CafeController {
-	@Autowired CafeRepo cafeRepo;
-	@Autowired PhotoRepo photoRepo;
+	@Autowired
+	CafeRepo cafeRepo;
+	@Autowired
+	PhotoRepo photoRepo;
+	
+	@Value("${upload.path}")
+	private String uploadPath;
 	
 	@GetMapping
 	public Iterable<Cafe> select() {
 		return cafeRepo.findAllByIsDelete(false);
 	}
-	
+
 	@GetMapping("/{id}")
 	public Cafe get(@PathVariable long id) throws Exception {
 		Optional<Cafe> db = cafeRepo.findById(id);
@@ -42,29 +51,25 @@ public class CafeController {
 			throw new Exception("do not exist id");
 		}
 	}
-	
+
 	@PostMapping
-	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @ModelAttribute Cafe cafe, 
-			MultipartFile[] files, int defaultImgIdx) throws IllegalStateException, IOException {
+	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @ModelAttribute Cafe cafe,
+			MultipartFile[] files, int defaultImgIdx) throws Exception {
 		cafe.setAppUser(new AppUser(userDetails.getId()));
 		cafeRepo.save(cafe);
-		
-		for(int i=0; i<files.length; i++) {
-			Photo photo = copyFile(files[i], cafe, defaultImgIdx==i);
+
+		for (int i = 0; i < files.length; i++) {
+			Photo photo = copyFile(files[i], cafe, defaultImgIdx == i);
 			photoRepo.save(photo);
 		}
-		
+
 		return cafe;
 	}
-	
+
 	@PostMapping("/{id}")
-	public Cafe patch(@AuthenticationPrincipal LoginUserDetails userDetails, 
-			@ModelAttribute Cafe cafe,
-			MultipartFile[] files, 
-			Integer defaultImgIdx,
-			Integer defaultImgIdxDb,
-			long[] deleteImgIds
-			) throws Exception {
+	public Cafe patch(@AuthenticationPrincipal LoginUserDetails userDetails, @ModelAttribute Cafe cafe,
+			MultipartFile[] files, Integer defaultImgIdx, Integer defaultImgIdxDb, long[] deleteImgIds)
+			throws Exception {
 		Cafe db = authCheck(cafe.getId(), userDetails.getId());
 		db.setName(cafe.getName());
 		db.setMemo(cafe.getMemo());
@@ -73,18 +78,20 @@ public class CafeController {
 		db.setWifi(cafe.isWifi());
 		db.setConcent(cafe.isConcent());
 		db.setReVisit(cafe.isReVisit());
+
 		
-		if (deleteImgIds != null ) {
-			for (Photo photo: db.getPhotos()) {
-				if (LongStream.of(deleteImgIds).anyMatch(x->x == photo.getId())) {
-					if(photo.isDefault()) photo.setDefault(false);
+		if (deleteImgIds != null) {
+			for (Photo photo : db.getPhotos()) {
+				if (LongStream.of(deleteImgIds).anyMatch(x -> x == photo.getId())) {
+					if (photo.isDefault())
+						photo.setDefault(false);
 					photo.setDelete(true);
 				}
 			}
 		}
-		
+
 		if (defaultImgIdx != null) {
-			for (Photo photo: db.getPhotos()) {
+			for (Photo photo : db.getPhotos()) {
 				if (photo.isDefault()) {
 					photo.setDefault(false);
 					break;
@@ -92,41 +99,76 @@ public class CafeController {
 			}
 		}
 		
-		for(int i=0; i<files.length; i++) {
-			Photo photo = copyFile(files[i], cafe, defaultImgIdx==i);
+		if (defaultImgIdxDb != null) {
+			for (Photo photo : db.getPhotos()) {
+				photo.setDefault(false);
+				if (photo.getId() == defaultImgIdxDb) {
+					photo.setDefault(true);
+				}
+			}
+		}
+
+		for (int i = 0; i < files.length; i++) {
+			Photo photo = copyFile(files[i], cafe, defaultImgIdx == i);
 			photoRepo.save(photo);
 		}
-		
+
 		return cafeRepo.save(db);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public void delete(@AuthenticationPrincipal LoginUserDetails userDetails, @PathVariable long id) throws Exception {
-		Cafe cafe = authCheck(id, userDetails.getId());		
+		Cafe cafe = authCheck(id, userDetails.getId());
 		cafe.setDelete(true);
 		cafeRepo.save(cafe);
 		// cafeRepo.deleteById(id);
 	}
-	
+
 	@DeleteMapping("/all")
 	public void deleteAll() throws Exception {
 		cafeRepo.deleteAll();
 	}
-	
-	public Photo copyFile(MultipartFile file, Cafe cafe, boolean isDefault) throws IllegalStateException, IOException {
+
+	public Photo copyFile(MultipartFile file, Cafe cafe, boolean isDefault) throws Exception {
 		String fileRealName = file.getOriginalFilename();
-		String fileName = System.currentTimeMillis() + "." +FilenameUtils.getExtension(fileRealName);
+		String fileName = System.currentTimeMillis() + "." + FilenameUtils.getExtension(fileRealName);
 		Photo photo = new Photo(fileName, fileRealName, file.getSize(), cafe, isDefault);
-		File f = new File("C:\\project\\codingcafe\\client\\src\\assets\\images\\" + fileName);
+		String orgFilePath = uploadPath + fileName;
+		String filePath = uploadPath + "\\tumb\\" + fileName;
+		File f = new File(orgFilePath);
 		file.transferTo(f);
+		imageResize(f, uploadPath, fileName, FilenameUtils.getExtension(fileRealName), 500);
 		return photo;
 	}
-	
+
+	public static void imageResize(File file, String uploadPath, String fileName, String imageType, int size) throws Exception {
+		BufferedImage originalImage = ImageIO.read(file);
+		int imgwidth = Math.min(originalImage.getHeight(), originalImage.getWidth());
+		int imgheight = imgwidth;
+		BufferedImage scaledImage = Scalr.crop(originalImage, (originalImage.getWidth() - imgwidth) / 2, (originalImage.getHeight() - imgheight) / 2, imgwidth, imgheight, null);
+		
+		BufferedImage resizedImage = null;
+		// 이미지사이즈가 1200보다 클경우 resize
+		if (originalImage.getWidth() >= 1200) {
+			
+			resizedImage = Scalr.resize(scaledImage, Mode.FIT_TO_WIDTH, 1200, null);
+			ImageIO.write(resizedImage, imageType, new File(uploadPath + fileName));
+		}
+		
+		// thumb 이미지 생성
+		resizedImage = Scalr.resize(scaledImage, Mode.FIT_TO_WIDTH, 500, null);
+		ImageIO.write(resizedImage, imageType, new File(uploadPath + "tumb\\" + fileName));
+		
+		// 상세화면 리스트용 이미지 생성
+		resizedImage = Scalr.resize(scaledImage, Mode.FIT_TO_WIDTH, 100, null);
+		ImageIO.write(resizedImage, imageType, new File(uploadPath + "m\\" + fileName));
+	}
+
 	public Cafe authCheck(long cafeId, long userId) throws Exception {
 		// 사용자가 같지 않으면 exception
 		Cafe db = get(cafeId);
-		
-		if(db.getAppUser().getId() != userId) {
+
+		if (db.getAppUser().getId() != userId) {
 			throw new AuthenticationException("No Auth");
 		}
 		return db;

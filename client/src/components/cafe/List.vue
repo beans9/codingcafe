@@ -40,7 +40,7 @@ export default {
       this.$router.push('/cafe/' + item.id)
     },
     imgSrc: function (fileName) {
-      return require('@/assets/images/' + fileName)
+      return require('@/assets/images/tumb/' + fileName)
     }
   }
 }
@@ -54,15 +54,11 @@ export default {
   /* border:1px solid red; */
   padding-top:30px;
   width:1200px;
+  min-width:330px;
   @include respond-to('large') {
-    width:1080px;
+    width:95%;
   }
-  @include respond-to('medium') {
-    width:992px;
-  }
-  @include respond-to('small') {
-    width:767px;
-  }
+
   margin:0 auto;
   // border:1px solid red;
   text-align: left;
@@ -75,6 +71,20 @@ export default {
   padding-top:25%;
   position:relative;
   font-size:18px;
+
+  @include respond-to('medium') {
+    width:33%;
+  }
+
+  @include respond-to('small') {
+    width:50%;
+    padding-top:50%;
+  }
+
+  @include respond-to('xmall') {
+    width:100%;
+    padding-top:50%;
+  }
   // @include respond-to('large') {
   //   width:300px;
   //   height:300px;
@@ -101,14 +111,18 @@ export default {
   right: 0;
   top: 0;
   bottom: 0;
-  margin: 1rem;
+  margin: 0.4rem;
+  @include respond-to('xmall') {
+    margin: 0.2rem;
+  }
+
   overflow: hidden;
   padding: 1rem;
   font-size: 2rem;
   opacity: 0.6;
   cursor: pointer;
   border:1px solid #999;
-  border-radius: 10px;
+  border-radius: 0px;
   font-weight: bold;
   transition: all .3s;
 
@@ -123,13 +137,17 @@ export default {
   &-title {
     position: relative;
     font-size:1.5rem;
+    @include respond-to('small') {
+      font-size:1.2rem;
+    }
     display:inline-block;
     top: 50%;
     width: 100%;
     transform: translateY(-50%);
     z-index: 30;
     text-align: center;
-    color:black;
+    color:white;
+    text-shadow: 3px 1px 6px #000;
     background-color: rgba(255, 255, 255, 0.5);
   }
 }
@@ -146,7 +164,6 @@ export default {
     // border-radius: 0.5rem;
     // box-shadow: 0 0 2rem 1rem rgba(0,0,0,0.5);
 }
-
 
 .img {
   width:100%;

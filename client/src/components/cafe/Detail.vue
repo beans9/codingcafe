@@ -1,13 +1,14 @@
 <template>
-  <div class="hello">
-    상세화면
-    <p>
-      게시물ID: {{id}}
-    </p>
-    <p v-if="cafe.photos.length != 0">
-      이미지
-      <img :src="imgSrc(photo.name)" class="img" v-for="(photo,index) in cafe.photos" :key="index"/>
-    </p>
+  <div class="detail">
+    <div class="detail-cover">
+      <template v-if="cover != null">
+        <img :src="imgSrc(cover.name)" />
+        <!-- <img :src="imgSrc(photo.name)" v-for="(photo,index) in cafe.photos" :key="index"/> -->
+      </template>
+    </div>
+    <div class="detail-cover-list">
+      <img :src="imgSrcTumb(photo.name)" v-for="(photo,index) in cafe.photos" :key="index" v-bind:class="{active:photo == cover}" @click="changeImg(photo)"/>
+    </div>
     <p>
       작성자: {{cafe.appUser.username}}
     </p>
@@ -27,7 +28,7 @@
       <input type="button" @click="patch()" value="수정"/>
       <input type="button" @click="del()" value="삭제"/>
     </template>
-    <router-link to="/">리스트</router-link>
+    <router-link to="/cafe">리스트</router-link>
   </div>
 </template>
 
@@ -55,11 +56,17 @@ export default {
           username: ''
         },
         photos: []
-      }
+      },
+      cover: null
     }
   },
   beforeRouteEnter (to, from, next) {
-    cafes.get(to.params.id).then((res) => next(vm => { vm.cafe = res }))
+    cafes.get(to.params.id).then((res) => next(vm => {
+      vm.cafe = res
+      if (vm.cafe.photos.length > 0) {
+        vm.cover = vm.cafe.photos[0]
+      }
+    }))
       .catch((e) => next(false))
   },
   watch: {
@@ -82,8 +89,14 @@ export default {
         this.$router.push('/')
       })
     },
+    changeImg: function (photo) {
+      this.cover = photo
+    },
     imgSrc: function (fileName) {
       return require('@/assets/images/' + fileName)
+    },
+    imgSrcTumb: function (fileName) {
+      return require('@/assets/images/m/' + fileName)
     }
   },
   computed: {
@@ -98,9 +111,43 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
+<style lang="scss" scoped>
+.detail {
+  &-cover {
+    // background-color:#e6e6e6;
+    padding-top:30px;
+    width:1180px;
+    height: 600px;
+    overflow:hidden;
+    margin:0 auto;
+    position: relative;
+
+    > img {
+      padding-top:10px;
+      margin-bottom:10px;
+    }
+
+    &-list {
+      width:1180px;
+      margin:0 auto;
+      text-align: left;
+      padding-top:10px;
+
+      img {
+        cursor:pointer;
+        width:80px;
+        border:2px solid transparent;
+      }
+
+      img+img {
+        margin-left:10px;
+      }
+
+      img.active {
+        border:2px solid #03a9f4;
+      }
+    }
+  }
 }
 
 .img {
