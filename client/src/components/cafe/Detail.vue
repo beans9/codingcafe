@@ -9,15 +9,15 @@
     <div class="detail-cover-list">
       <img :src="imgSrcTumb(photo.name)" v-for="(photo,index) in cafe.photos" :key="index" v-bind:class="{active:photo == cover}" @click="changeImg(photo)"/>
     </div>
-    <p>
-      작성자: {{cafe.appUser.username}}
-    </p>
-    <p>
-      이름 : {{cafe.name}}
-    </p>
-    <p>
-      주소 : {{cafe.address}}
-    </p>
+    <div class="detail-info">
+      <h1>{{cafe.name}}</h1>
+      <h2>{{cafe.address}}</h2>
+      <div class="detail-info-user">
+        {{cafe.appUser.username}}
+      </div>
+    </div>
+
+
     <p>주차정보: {{cafe.parking===true?'가능':'불가능'}}</p>
     <p>무선랜정보: {{cafe.wifi===true?'가능':'불가능'}}</p>
     <p>전원콘센트: {{cafe.concent===true?'있음':'없음'}}</p>
@@ -146,6 +146,24 @@ export default {
       img.active {
         border:2px solid #03a9f4;
       }
+    }
+  }
+
+  &-info {
+    box-sizing: border-box;
+    width:1180px;
+    margin:0 auto;
+    text-align: left;
+    position:relative;
+
+    &-user {
+      position:absolute;
+      right:0px;
+      top:10px;
+    }
+    h1 {
+      font-size: 2em;
+      border-bottom: 1px dashed #eaecef;
     }
   }
 }

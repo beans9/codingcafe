@@ -1,5 +1,6 @@
 package com.beans9.app.cafe;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import javax.persistence.Entity;
@@ -32,8 +33,12 @@ public class Cafe {
 	private boolean concent;
 	private boolean wifi;
 	private boolean reVisit;
+	private LocalDateTime createDate;
+	private LocalDateTime modifyDate;
 
 	boolean isDelete = false;
+	
+	
 	
 	@OneToOne
 	@JoinColumn(name="appUser_id")
