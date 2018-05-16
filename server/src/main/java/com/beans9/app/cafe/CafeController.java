@@ -2,6 +2,9 @@ package com.beans9.app.cafe;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.LongStream;
 
@@ -31,8 +34,12 @@ import com.beans9.app.user.LoginUserDetails;
 public class CafeController {
 	@Autowired
 	CafeRepo cafeRepo;
+	
 	@Autowired
 	PhotoRepo photoRepo;
+	
+	@Autowired
+	TagRepo tagRepo;
 	
 	@Value("${upload.path}")
 	private String uploadPath;
@@ -41,7 +48,7 @@ public class CafeController {
 	public Iterable<Cafe> select() {
 		return cafeRepo.findAllByIsDelete(false);
 	}
-
+	
 	@GetMapping("/{id}")
 	public Cafe get(@PathVariable long id) throws Exception {
 		Optional<Cafe> db = cafeRepo.findById(id);
@@ -54,13 +61,23 @@ public class CafeController {
 
 	@PostMapping
 	public Cafe post(@AuthenticationPrincipal LoginUserDetails userDetails, @ModelAttribute Cafe cafe,
-			MultipartFile[] files, int defaultImgIdx) throws Exception {
-		cafe.setAppUser(new AppUser(userDetails.getId()));
+			MultipartFile[] files, int defaultImgIdx,
+			String tagList
+			) throws Exception {
+		AppUser user  = new AppUser(userDetails.getId());
+		cafe.setAppUser(user);
+		cafe.setCreateDate(LocalDateTime.now());
 		cafeRepo.save(cafe);
 
-		for (int i = 0; i < files.length; i++) {
+		for (int i=0; i < files.length; i++) {
 			Photo photo = copyFile(files[i], cafe, defaultImgIdx == i);
 			photoRepo.save(photo);
+		}
+		
+		String[] tags = tagList.split("__");
+		for (int i=0; i < tags.length; i++) {
+			Tag tag = new Tag(tags[i], user, cafe);
+			tagRepo.save(tag);
 		}
 
 		return cafe;
@@ -78,7 +95,6 @@ public class CafeController {
 		db.setWifi(cafe.isWifi());
 		db.setConcent(cafe.isConcent());
 		db.setReVisit(cafe.isReVisit());
-
 		
 		if (deleteImgIds != null) {
 			for (Photo photo : db.getPhotos()) {

@@ -64,6 +64,10 @@ let cafes = {
       formData.append(keys[i], params[keys[i]])
     }
 
+    for (let i = 0; i < params['tags'].length; i++) {
+      formData.append('tags', params['tags'][i])
+    }
+
     return axios.post(cafes.baseUrl + '/' + params.id,
       formData,
       {headers: {'Content-Type': 'multipart/form-data'}}

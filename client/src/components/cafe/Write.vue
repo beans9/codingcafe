@@ -26,7 +26,8 @@
     </p>
     <P>기타설명: <textarea v-model="cafe.memo"></textarea></P>
     <p>태그:
-      <input type="text" v-model="cafe.tag" placeholder="#으로 구분해서 적어주세요"/>
+      <input type="text" v-model="tag" placeholder="태그를 입력하십시오.(enter)" v-on:keyup.enter="tagAdd()" />
+      <span v-for="(item,index) in tags" v-bind:key="'tag' + index">{{item}} x</span>
     </p>
     <div>사진
       <div v-for="(photo,index) in files" v-bind:key="index" v-bind:class="{active:photo.default}">
@@ -60,8 +61,10 @@ export default {
         concent: 0,
         wifi: 0,
         reVisit: 0,
-        tag: ''
+        tagList: ''
       },
+      tag: '',
+      tags: [],
       files: []
     }
   },
@@ -71,6 +74,7 @@ export default {
   methods: {
     proc: function () {
       if (this.formValidation()) {
+        this.cafe.tagList = this.tags.join('__')
         cafes.insert(this.cafe, this.files).then((res) => {
           setTimeout(() => {
             this.$router.push('/cafe/' + res.id)
@@ -128,6 +132,15 @@ export default {
     photoUpload: function () {
       this.$refs.file.value = ''
       this.$refs.file.click()
+    },
+    tagAdd: function () {
+      if (this.tag.replace(/ /g, '') === '') {
+        return
+      }
+      this.tags.push(this.tag)
+      this.tag = ''
+    },
+    tagDel: function (item) {
     }
   }
 }

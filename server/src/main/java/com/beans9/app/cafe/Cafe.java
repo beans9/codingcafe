@@ -2,6 +2,7 @@ package com.beans9.app.cafe;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import javax.persistence.OrderBy;
 
 import org.hibernate.annotations.Where;
 
+import com.beans9.app.common.Util;
 import com.beans9.app.user.AppUser;
 
 import lombok.Getter;
@@ -33,12 +35,11 @@ public class Cafe {
 	private boolean concent;
 	private boolean wifi;
 	private boolean reVisit;
+	
 	private LocalDateTime createDate;
 	private LocalDateTime modifyDate;
-
+	
 	boolean isDelete = false;
-	
-	
 	
 	@OneToOne
 	@JoinColumn(name="appUser_id")
@@ -48,5 +49,15 @@ public class Cafe {
 	@Where(clause = "is_delete=false")
 	@OrderBy("isDefault DESC")
 	private Collection<Photo> photos;
+	
+	@OneToMany(mappedBy="cafe")
+	private Collection<Tag> tags;
+	
+	@OneToMany(mappedBy="cafe")
+	private Collection<Comment> comments;
+	
+	public String getCreateDate() {
+		return this.createDate.format(Util.dateTimeFormatter);
+	}
 	
 }

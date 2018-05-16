@@ -13,21 +13,25 @@
       <h1>{{cafe.name}}</h1>
       <h2>{{cafe.address}}</h2>
       <div class="detail-info-user">
-        {{cafe.appUser.username}}
+        <template v-if="isModified">
+          <input type="button" @click="patch()" value="수정"/>
+          <input type="button" @click="del()" value="삭제"/>
+        </template>
+
+        <img src="@/assets/images/user/user_32.png" class="detail-info-user-icon" /> {{cafe.appUser.username}}
+        <span class="detail-info-dt">| {{cafe.createDate}}</span>
+      </div>
+      <div class="detail-info-more">
+        <p>- 주차정보: {{cafe.parking===true?'가능':'불가능'}}</p>
+        <p>- 무선랜정보: {{cafe.wifi===true?'가능':'불가능'}}</p>
+        <p>- 전원콘센트: {{cafe.concent===true?'있음':'없음'}}</p>
+        <p>- 재방문의사: {{cafe.reVisit===true?'있음':'없음'}}</p>
+        <P>{{cafe.memo}}</P>
+        <p v-if="cafe.tags.length > 0">
+          <span v-for="item in cafe.tags" v-bind:key="'tags' + item.id" class="tag">{{item.name}}</span>
+        </p>
       </div>
     </div>
-
-
-    <p>주차정보: {{cafe.parking===true?'가능':'불가능'}}</p>
-    <p>무선랜정보: {{cafe.wifi===true?'가능':'불가능'}}</p>
-    <p>전원콘센트: {{cafe.concent===true?'있음':'없음'}}</p>
-    <p>재방문의사: {{cafe.reVisit===true?'있음':'없음'}}</p>
-    <P>기타설명: {{cafe.memo}}</P>
-    <p>태그:</p>
-    <template v-if="isModified">
-      <input type="button" @click="patch()" value="수정"/>
-      <input type="button" @click="del()" value="삭제"/>
-    </template>
     <router-link to="/cafe">리스트</router-link>
   </div>
 </template>
@@ -55,7 +59,8 @@ export default {
         appUser: {
           username: ''
         },
-        photos: []
+        photos: [],
+        tags: []
       },
       cover: null
     }
@@ -156,14 +161,33 @@ export default {
     text-align: left;
     position:relative;
 
+    &-dt {
+      padding-left:10px;
+      font-size:0.9em;
+    }
+
     &-user {
       position:absolute;
       right:0px;
       top:10px;
+      font-size: 1em;
+      padding-left: 10px;
+
+      &-icon {
+        vertical-align: middle;
+        padding-bottom:2px;
+        width:22px;
+        padding-right:3px;
+      }
     }
+
     h1 {
       font-size: 2em;
       border-bottom: 1px dashed #eaecef;
+    }
+
+    &-more {
+      text-align: left;
     }
   }
 }
@@ -171,5 +195,15 @@ export default {
 .img {
   width:200px;
   border:1px solid #e6e6e6;
+}
+
+.tag {
+  border:1px solid #e6e6e6;
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.tag+.tag{
+  margin-left:5px;
 }
 </style>

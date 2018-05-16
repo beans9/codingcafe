@@ -112,7 +112,7 @@ export default {
   text-align: left;
 
   .footer-content {
-    border:1px solid red;
+    // border:1px solid red;
     width:1280px;
     margin:0 auto;
     padding-left:110px;

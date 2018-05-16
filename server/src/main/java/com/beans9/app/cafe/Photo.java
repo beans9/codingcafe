@@ -26,7 +26,6 @@ public class Photo {
 	
 	@JsonIgnore
 	@ManyToOne
-	// @JoinColumn(name="cafe_id")
 	private Cafe cafe;
 	
 	public Photo() {}
