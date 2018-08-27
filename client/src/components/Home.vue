@@ -38,7 +38,7 @@
     </el-footer>
 
     <el-dialog
-      title="Insert"
+      title="글등록"
       :visible.sync="newDialogFlag"
       width="50%"
       :before-close="handleClose">
@@ -75,6 +75,9 @@ export default {
       } else if (command === 'info') {
         this.$router.push('/user/info')
       }
+    },
+    handleClose: function () {
+      console.log('test')
     }
   },
   computed: {
@@ -88,15 +91,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 @import "~styles/common.scss";
-@import "~styles/_mixin.scss";
+// @import "~styles/_mixin.scss";
 header{
   padding-top:20px;
   padding-bottom:20px;
 }
+
 footer{
   line-height: 60px;
   text-align: left;
   font-size: 12px;
 }
-
 </style>

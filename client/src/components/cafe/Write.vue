@@ -1,34 +1,40 @@
 <template>
-  <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
+  <!-- :rules="rules" -->
+  <el-form :model="ruleForm" ref="ruleForm" label-width="120px" class="demo-ruleForm">
     <el-form-item label="카페명" prop="name">
       <el-input v-model="cafe.name"></el-input>
     </el-form-item>
     <el-form-item label="주소" prop="address">
       <el-input v-model="cafe.address"></el-input>
     </el-form-item>
-      <!-- <el-select v-model="ruleForm.region" placeholder="Activity zone">
-        <el-option label="Zone one" value="shanghai"></el-option>
-        <el-option label="Zone two" value="beijing"></el-option>
-      </el-select> -->
+
+    <!-- <el-select v-model="ruleForm.region" placeholder="Activity zone">
+      <el-option label="Zone one" value="shanghai"></el-option>
+      <el-option label="Zone two" value="beijing"></el-option>
+    </el-select> -->
     <el-form-item label="주차정보" prop="parking">
       <el-radio-group v-model="cafe.parking">
-        <el-radio label="가능"></el-radio>
-        <el-radio label="불가능"></el-radio>
+        <el-radio :label="1">가능</el-radio>
+        <el-radio :label="0">불가능</el-radio>
       </el-radio-group>
     </el-form-item>
 
     <el-form-item label="WIFI" prop="wifi">
       <el-radio-group v-model="cafe.wifi">
-        <el-radio label="가능"></el-radio>
-        <el-radio label="불가능"></el-radio>
+        <el-radio :label="1">가능</el-radio>
+        <el-radio :label="0">불가능</el-radio>
       </el-radio-group>
     </el-form-item>
 
     <el-form-item label="전원콘센트" prop="concent">
       <el-radio-group v-model="cafe.concent">
-        <el-radio label="있음"></el-radio>
-        <el-radio label="없음"></el-radio>
+        <el-radio :label="1">있음</el-radio>
+        <el-radio :label="0">없음</el-radio>
       </el-radio-group>
+    </el-form-item>
+
+    <el-form-item label="평점" prop="rate">
+      <el-rate v-model="cafe.rate" style="padding-top:10px"></el-rate>
     </el-form-item>
 
     <el-form-item label="기타의견" prop="memo">
@@ -130,12 +136,13 @@ export default {
         memo: '',
         address: '',
         addressErr: false,
-        parking: 0,
-        concent: 0,
-        wifi: 0,
-        reVisit: 0,
+        parking: 1,
+        concent: 1,
+        wifi: 1,
+        rate: null,
         tagList: ''
       },
+      ruleForm: {},
       tag: '',
       tags: [],
       files: []
@@ -220,7 +227,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lnag="scss" scoped>
 h1, h2 {
   font-weight: normal;
 }
@@ -236,5 +243,11 @@ h1, h2 {
 
 .err {
   color:red;
+}
+</style>
+<style>
+.el-form-item__content {
+  text-align: left !important;
+  padding-left: 10px;
 }
 </style>
