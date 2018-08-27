@@ -1,49 +1,80 @@
 <template>
-  <div class="main">
-    <div class="menu">
-      <div class="menu-content">
-        <div class="logo">
-          <!-- CoadingCaffe -->
-          CC - -
-        </div>
-        <div class="menu-right">
-          <router-link to="/user/signin" v-if="!isAuthenticated">로그인</router-link>
-          <router-link to="/user/signup" v-if="!isAuthenticated">회원가입</router-link>
-          <router-link to="/cafe/new" v-if="isAuthenticated" class="btn info">입력</router-link>
-          <router-link to="/user/info" v-if="isAuthenticated" class="btn">{{getUserInfo.name}}</router-link>
-          <!-- <a href="#" @click="logout()" v-if="isAuthenticated" class="btn">로그아웃</a> -->
-        </div>
-      </div>
-    </div>
+  <el-container>
+    <el-header>
+      <el-row :gutter="24">
+        <el-col :span="5" :offset="1">
+          <router-link to="/cafe"><div class="grid-content tal">Coding Cafe</div></router-link>
+        </el-col>
+        <el-col :span="5" :offset="12">
+          <div class="grid-content">
+            <router-link to="/user/signin" v-if="!isAuthenticated">로그인</router-link>
+            <router-link to="/user/signup" v-if="!isAuthenticated">회원가입</router-link>
 
-    <router-view></router-view>
+            <el-dropdown v-if="isAuthenticated" size="small" style="padding-right:10px;" @command="loginInfoCommand">
+              <span class="el-dropdown-link">
+                {{getUserInfo.name}} <i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="info">Info</el-dropdown-item>
+                <el-dropdown-item command="logout">Logout</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <router-link to="/cafe/new" v-if="isAuthenticated"><el-button icon="el-icon-edit" size="mini" v-if="isAuthenticated">입력</el-button></router-link>
+          </div>
+        </el-col>
+      </el-row>
+    </el-header>
+    <el-main>
+      <router-view></router-view>
+    </el-main>
+    <el-footer>
+      <el-row :gutter="24">
+        <el-col :span="23" :offset="1">
+          <div class="grid-content">
+            © CoadingCaffe. All rights reserved
+          </div>
+        </el-col>
+      </el-row>
+    </el-footer>
 
-    <!-- <img src="@/assets/images/logo.png" /> -->
-    <!-- <p v-if="isAuthenticated">{{getUserInfo.name}}({{getUserInfo.email}})님 안녕하세요.</p> -->
-    <div class="footer">
-      <div class="footer-content">
-          © CoadingCaffe. All rights reserved
-      </div>
-    </div>
-  </div>
+    <el-dialog
+      title="Insert"
+      :visible.sync="newDialogFlag"
+      width="50%"
+      :before-close="handleClose">
+      <cafe-form></cafe-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+      </span>
+    </el-dialog>
+  </el-container>
 </template>
 
 <script>
 import CafeList from '@/components/cafe/List.vue'
 // import {EventBus} from '@/event-bus.js'
+import CafeForm from '@/components/cafe/Write.vue'
 import {mapGetters} from 'vuex'
 
 export default {
   name: 'Home',
-  components: {CafeList},
+  components: {CafeList, CafeForm},
   data () {
-    return {}
+    return {
+      newDialogFlag: true
+    }
   },
   created: function () {},
   methods: {
-    logout: function () {
-      delete localStorage.codingcafeToken
-      this.$store.dispatch('LOGOUT')
+    loginInfoCommand: function (command) {
+      if (command === 'logout') {
+        delete localStorage.codingcafeToken
+        this.$store.dispatch('LOGOUT')
+        this.$router.push('/cafe')
+      } else if (command === 'info') {
+        this.$router.push('/user/info')
+      }
     }
   },
   computed: {
@@ -58,76 +89,14 @@ export default {
 <style lang="scss" scoped>
 @import "~styles/common.scss";
 @import "~styles/_mixin.scss";
-
-.main {
-  .menu {
-    background-color: white;
-    border-bottom:1px solid #d1d8e5;
-
-    .menu-content {
-      // border:1px solid red;
-      max-width: 1280px;
-      width:100%;
-      margin:0 auto;
-      height: 50px;
-      line-height:50px;
-
-      .logo {
-        float:left;
-        padding-left:50px;
-        @include respond-to('small') {
-          padding-left:20px;
-        }
-        font-weight: bold;
-        font-size:20px;
-      }
-      .menu-right {
-        float:right;
-        padding-right:50px;
-        @include respond-to('small') {
-          padding-right:20px;
-        }
-        font-size:14px;
-      }
-
-    }
-  }
+header{
+  padding-top:20px;
+  padding-bottom:20px;
 }
-
-.footer {
-  clear:both;
-
-  display:inline-block;
-  margin-top:30px;
-  width:100%;
-  background-color:#f6f6f6;
-  padding-top:50px;
-  padding-bottom:80px;
-
-  @include respond-to('small') {
-    padding-top:20px;
-    padding-bottom:20px;
-  }
-
+footer{
+  line-height: 60px;
   text-align: left;
-
-  .footer-content {
-    // border:1px solid red;
-    width:1280px;
-    margin:0 auto;
-    padding-left:110px;
-    font-size:13px;
-    box-sizing: border-box;
-
-    color:rgba(88, 88, 88, 0.5);
-    @include respond-to('large') {
-      width:95%;
-    }
-
-    @include respond-to('small') {
-      padding-left:25px;
-      font-size:12px;
-    }
-  }
+  font-size: 12px;
 }
+
 </style>
